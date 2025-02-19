@@ -17,9 +17,9 @@ fun rememberFilteredAcceleration(
     threshold: Float = 0.05f
 ): Triple<Float, Float, Float> {
     // Keep track of old filtered values
-    var filteredX by remember { mutableStateOf(rawX) }
-    var filteredY by remember { mutableStateOf(rawY) }
-    var filteredZ by remember { mutableStateOf(rawZ) }
+    var filteredX by remember { mutableFloatStateOf(rawX) }
+    var filteredY by remember { mutableFloatStateOf(rawY) }
+    var filteredZ by remember { mutableFloatStateOf(rawZ) }
 
     // We recalculate filtered values whenever raw changes
     LaunchedEffect(rawX, rawY, rawZ) {
@@ -47,7 +47,7 @@ fun rememberHorizontalMovement(
     sensitivity: Float = 1.5f,
     friction: Float = 0.95f
 ): Float {
-    var velocityX by remember { mutableStateOf(0f) }
+    var velocityX by remember { mutableFloatStateOf(0f) }
 
     LaunchedEffect(accelX) {
         // Add some velocity based on sensor reading
@@ -64,7 +64,7 @@ fun rememberHorizontalMovement(
  * If you want to detect events like a ‘jump’ or a special move, call this.
  */
 @Composable
-fun detectShakeEvent(
+fun DetectShakeEvent(
     accelX: Float,
     accelY: Float,
     accelZ: Float,
