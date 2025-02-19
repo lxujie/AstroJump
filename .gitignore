@@ -13,3 +13,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Ignore APK, DEX, and intermediate build files
+*.apk
+*.dex
+/build/
