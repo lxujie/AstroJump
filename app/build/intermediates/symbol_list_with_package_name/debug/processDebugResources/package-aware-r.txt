@@ -296,7 +296,7 @@ style TextAppearance_Compat_Notification_Info
 style TextAppearance_Compat_Notification_Line2
 style TextAppearance_Compat_Notification_Time
 style TextAppearance_Compat_Notification_Title
-style Theme_Fourdigits
+style Theme_Astrojump
 style WhiteBackgroundDialogTheme
 style WhiteBackgroundTheme
 style Widget_Compat_NotificationActionContainer

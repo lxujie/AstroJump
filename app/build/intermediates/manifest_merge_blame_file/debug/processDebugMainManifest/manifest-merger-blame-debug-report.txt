@@ -38,7 +38,7 @@
 24
 25    <application
 25-->C:\Users\TUF\Documents\GitHub\AstroJump\app\src\main\AndroidManifest.xml:5:5-27:19
-26        android:name="edu.singaporetech.astrojump.FourDigitApp"
+26        android:name="edu.singaporetech.astrojump.AstroJumpApp"
 26-->C:\Users\TUF\Documents\GitHub\AstroJump\app\src\main\AndroidManifest.xml:11:9-37
 27        android:allowBackup="true"
 27-->C:\Users\TUF\Documents\GitHub\AstroJump\app\src\main\AndroidManifest.xml:6:9-35
@@ -59,8 +59,8 @@
 36        android:supportsRtl="true"
 36-->C:\Users\TUF\Documents\GitHub\AstroJump\app\src\main\AndroidManifest.xml:13:9-35
 37        android:testOnly="true"
-38        android:theme="@style/Theme.Fourdigits" >
-38-->C:\Users\TUF\Documents\GitHub\AstroJump\app\src\main\AndroidManifest.xml:14:9-48
+38        android:theme="@style/Theme.Astrojump" >
+38-->C:\Users\TUF\Documents\GitHub\AstroJump\app\src\main\AndroidManifest.xml:14:9-47
 39        <activity
 39-->C:\Users\TUF\Documents\GitHub\AstroJump\app\src\main\AndroidManifest.xml:16:9-26:20
 40            android:name="edu.singaporetech.astrojump.MainActivity"
@@ -69,8 +69,8 @@
 41-->C:\Users\TUF\Documents\GitHub\AstroJump\app\src\main\AndroidManifest.xml:18:13-36
 42            android:label="@string/app_name"
 42-->C:\Users\TUF\Documents\GitHub\AstroJump\app\src\main\AndroidManifest.xml:19:13-45
-43            android:theme="@style/Theme.Fourdigits" >
-43-->C:\Users\TUF\Documents\GitHub\AstroJump\app\src\main\AndroidManifest.xml:20:13-52
+43            android:theme="@style/Theme.Astrojump" >
+43-->C:\Users\TUF\Documents\GitHub\AstroJump\app\src\main\AndroidManifest.xml:20:13-51
 44            <intent-filter>
 44-->C:\Users\TUF\Documents\GitHub\AstroJump\app\src\main\AndroidManifest.xml:21:13-25:29
 45                <action android:name="android.intent.action.MAIN" />

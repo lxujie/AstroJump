@@ -295,7 +295,7 @@ int style TextAppearance_Compat_Notification_Info 0x7f0a0006
 int style TextAppearance_Compat_Notification_Line2 0x7f0a0007
 int style TextAppearance_Compat_Notification_Time 0x7f0a0008
 int style TextAppearance_Compat_Notification_Title 0x7f0a0009
-int style Theme_Fourdigits 0x7f0a000a
+int style Theme_Astrojump 0x7f0a000a
 int style WhiteBackgroundDialogTheme 0x7f0a000b
 int style WhiteBackgroundTheme 0x7f0a000c
 int style Widget_Compat_NotificationActionContainer 0x7f0a000d
