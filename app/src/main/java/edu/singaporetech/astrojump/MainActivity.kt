@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             // 1) Call the sensor composable to obtain accelerometer values
-            val (ax, ay, az) = AccelerometerSensor()
+            val (ax, ay, az) = accelerometerSensor()
 
             // 2) Simple UI to show the readings (placeholder)
             Box(

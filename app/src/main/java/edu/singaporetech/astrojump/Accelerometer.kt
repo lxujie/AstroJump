@@ -13,7 +13,7 @@ class Accelerometer {
 }*/
 
 @Composable
-fun AccelerometerSensor(): Triple<Float, Float, Float> {
+fun accelerometerSensor(): Triple<Float, Float, Float> {
     val context = LocalContext.current
     val sensorManager = remember {
         context.getSystemService(SensorManager::class.java)
