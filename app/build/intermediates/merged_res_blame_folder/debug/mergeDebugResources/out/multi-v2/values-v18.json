@@ -4,7 +4,7 @@
             "outputFile": "edu.singaporetech.astrojump.app-mergeDebugResources-58:/values-v18/values-v18.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\TUF\\.gradle\\caches\\8.9\\transforms\\98fe8b60a6b1b1dc8b47858802c5aad0\\transformed\\core-1.6.1\\res\\values-v18\\values.xml",
+                    "source": "C:\\Users\\liu_x\\.gradle\\caches\\8.9\\transforms\\98fe8b60a6b1b1dc8b47858802c5aad0\\transformed\\core-1.6.1\\res\\values-v18\\values.xml",
                     "from": {
                         "startLines": "4,12",
                         "startColumns": "0,0",

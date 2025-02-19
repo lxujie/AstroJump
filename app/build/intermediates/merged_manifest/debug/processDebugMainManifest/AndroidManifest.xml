@@ -23,7 +23,7 @@
     </queries>
 
     <application
-        android:name="edu.singaporetech.astrojump.AstroJumpApp"
+        android:name="astrojump.AstroJumpApp"
         android:allowBackup="true"
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -37,7 +37,7 @@
         android:testOnly="true"
         android:theme="@style/Theme.Astrojump" >
         <activity
-            android:name="edu.singaporetech.astrojump.MainActivity"
+            android:name="astrojump.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Astrojump" >
