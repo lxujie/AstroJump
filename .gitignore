@@ -18,3 +18,5 @@ local.properties
 *.apk
 *.dex
 /build/
+# Ignore all intermediates folders
+**/build/intermediates/
