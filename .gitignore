@@ -20,3 +20,8 @@ local.properties
 /build/
 # Ignore all intermediates folders
 **/build/intermediates/
+
+# Ignore Kotlin compilation cache
+app/build/
+app/build/kotlin/
+app/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/
