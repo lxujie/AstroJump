@@ -4,7 +4,7 @@
             "outputFile": "edu.singaporetech.astrojump.app-mergeDebugResources-58:/values-v21/values-v21.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\liu_x\\.gradle\\caches\\8.9\\transforms\\6fc5a078ab53c99a0c3c185f62ff7b22\\transformed\\core-1.15.0\\res\\values-v21\\values-v21.xml",
+                    "source": "C:\\Users\\TUF\\.gradle\\caches\\8.9\\transforms\\6fc5a078ab53c99a0c3c185f62ff7b22\\transformed\\core-1.15.0\\res\\values-v21\\values-v21.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,13",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4",
@@ -23,7 +23,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\liu_x\\.gradle\\caches\\8.9\\transforms\\98fe8b60a6b1b1dc8b47858802c5aad0\\transformed\\core-1.6.1\\res\\values-v21\\values.xml",
+                    "source": "C:\\Users\\TUF\\.gradle\\caches\\8.9\\transforms\\98fe8b60a6b1b1dc8b47858802c5aad0\\transformed\\core-1.6.1\\res\\values-v21\\values.xml",
                     "from": {
                         "startLines": "4,13",
                         "startColumns": "0,0",

@@ -5,6 +5,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,6 +16,10 @@ import astrojump.model.Sprite
 import astrojump.util.loadImageFromAssets
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
+import astrojump.input.DetectShakeEvent
+import astrojump.input.accelerometerSensor
+import astrojump.input.rememberFilteredAcceleration
+import astrojump.input.rememberHorizontalMovement
 
 @Composable
 fun GameCanvas() {
@@ -31,14 +36,45 @@ fun GameCanvas() {
         }
     }
 
+    //Read the accelerometer
+    val (axRaw, ayRaw, azRaw) = accelerometerSensor()
+    //filter
+    // 5) Apply optional filtering
+    //    For debugging, let's keep alpha moderate, no threshold
+    val (ax, _, _) = rememberFilteredAcceleration(
+        rawX = axRaw,
+        rawY = ayRaw,
+        rawZ = azRaw,
+        alpha = 0.5f,    // mid-level smoothing
+        threshold = 0f   // no dead zone for debugging
+    )
+
+    //detect a shake to trigger a "jump" etc
+    DetectShakeEvent(ax, ayRaw, azRaw){
+        if(sprites.isNotEmpty()){
+            sprites[0].position.value = Offset(sprites[0].position.value.x, 50f) //some jump
+        }
+    }
+
     // A simple game loop that updates your sprites.
     LaunchedEffect(Unit) {
-        val frameTime = 16L // ~60fps
+
+        val sensitivity = 10f
+        val friction = 0.95f
+        val frameTimeMs = 16L
+        val dtSeconds = frameTimeMs / 1000f
+
         while (true) {
-            sprites.forEach { sprite ->
-                sprite.update(frameTime)
+            if (sprites.isNotEmpty()) {
+                val sprite = sprites[0]
+                val currentVelocityX = sprite.velocity.value.x
+                val newVelocityX = (currentVelocityX + (-ax * sensitivity * dtSeconds)) * friction
+                sprite.velocity.value = Offset(newVelocityX, sprite.velocity.value.y)
+
+                //update sprite position
+                sprite.update(frameTimeMs)
             }
-            delay(frameTime)
+            delay(16L)
         }
     }
 
@@ -49,16 +85,22 @@ fun GameCanvas() {
         } else {
             Canvas(modifier = Modifier.fillMaxSize()) {
                 sprites.forEach { sprite ->
-                    // Use transformations if you want to rotate or scale.
                     withTransform({
                         translate(sprite.position.value.x, sprite.position.value.y)
                         rotate(degrees = sprite.rotation.value)
                         scale(scale = sprite.scale.value)
                     }) {
-                        // Draw the sprite with its top left at (0, 0) since we've already translated.
                         drawImage(image = sprite.image)
                     }
                 }
+            }
+        }
+
+        // 10) Debug information: show sensor & sprite position
+        Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+            Text("axRaw=$axRaw, axFiltered=$ax")
+            if (sprites.isNotEmpty()) {
+                Text("spriteX=${sprites[0].position.value.x}")
             }
         }
     }
