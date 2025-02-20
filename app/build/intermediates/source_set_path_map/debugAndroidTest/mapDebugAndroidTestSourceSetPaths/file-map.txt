@@ -1,4 +1,0 @@
-edu.singaporetech.astrojump.test.app-androidTest-0 C:\Users\TUF\Documents\GitHub\AstroJump\app\build\generated\res\resValues\androidTest\debug
-edu.singaporetech.astrojump.test.app-mergeDebugAndroidTestResources-1 C:\Users\TUF\Documents\GitHub\AstroJump\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
-edu.singaporetech.astrojump.test.app-mergeDebugAndroidTestResources-2 C:\Users\TUF\Documents\GitHub\AstroJump\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
-edu.singaporetech.astrojump.test.app-debugAndroidTest-3 C:\Users\TUF\Documents\GitHub\AstroJump\app\build\intermediates\merged_res\debugAndroidTest\mergeDebugAndroidTestResources

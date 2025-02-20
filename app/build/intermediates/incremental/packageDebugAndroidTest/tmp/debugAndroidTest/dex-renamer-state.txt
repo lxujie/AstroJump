@@ -1,4 +1,0 @@
-#Tue Feb 18 20:44:31 SGT 2025
-base.0=C\:\\Users\\TUF\\Documents\\GitHub\\AstroJump\\app\\build\\intermediates\\dex\\debugAndroidTest\\mergeProjectDexDebugAndroidTest\\0\\classes.dex
-path.0=0/classes.dex
-renamed.0=classes.dex
