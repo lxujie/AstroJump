@@ -46,4 +46,9 @@ data class Sprite(
     fun checkCollision(other: Sprite): Boolean {
         return this.boundingBox.overlaps(other.boundingBox)
     }
+
+    // Function to check collision with the floor
+    fun checkFloorCollision(screenHeight: Float): Boolean {
+        return boundingBox.bottom >= screenHeight
+    }
 }
