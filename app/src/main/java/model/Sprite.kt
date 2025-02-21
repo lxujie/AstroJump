@@ -4,18 +4,21 @@ package astrojump.model
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 
-data class Sprite(
+open class Sprite(
     val image: ImageBitmap,
+    var id: MutableState<Int> = mutableIntStateOf(0),
     var position: MutableState<Offset> = mutableStateOf(Offset.Zero),
     var rotation: MutableState<Float> = mutableFloatStateOf(0f),
     var scale: MutableState<Float> = mutableFloatStateOf(1f),
     var color: MutableState<Color> = mutableStateOf(Color.White), // Default color
-    var velocity: MutableState<Offset> = mutableStateOf(Offset.Zero) // Movement speed
+    var velocity: MutableState<Offset> = mutableStateOf(Offset.Zero), // Movement speed
+    var isAlive: MutableState<Boolean> = mutableStateOf(true)
 ) {
 
     // Correct width and height using scale
@@ -30,7 +33,7 @@ data class Sprite(
             bottom = position.value.y + height
         )
 
-    fun update(dt: Float, screenWidth: Float, screenHeight: Float) {
+    open fun update(dt: Float, screenWidth: Float, screenHeight: Float) {
         var newX = position.value.x + velocity.value.x * dt
         val newY = position.value.y + velocity.value.y * dt
 

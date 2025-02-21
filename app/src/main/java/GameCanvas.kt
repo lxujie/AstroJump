@@ -28,8 +28,11 @@ import kotlin.math.abs
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalConfiguration
+import astrojump.model.Player
+import astrojump.model.SkyItems
 
 var items = 10
+var count = 0
 @Composable
 fun GameCanvas() {
 
@@ -47,6 +50,9 @@ fun GameCanvas() {
     // Maintain a list of sprites. This state will hold your game objects.
     val sprites = remember { mutableStateListOf<Sprite>() }
 
+    // Maintain a list of sky items. This state will hold your game objects.
+    val skyItems = remember { mutableStateListOf<SkyItems>() }
+
     // Initialize the sprite list once the image is loaded.
     LaunchedEffect(astroBoyImage) {
 
@@ -56,9 +62,8 @@ fun GameCanvas() {
             //sprite1.setVelocity(0f, 0f) // Move right
 
             // Create second sprite moving left
-            val sprite2 = Sprite(image = astroBoyImage, position = mutableStateOf(Offset(600f, 2000f)))
+            val sprite2 = Player(image = astroBoyImage,id = mutableIntStateOf(count++), position = mutableStateOf(Offset(600f, 2000f)))
             //sprite2.setVelocity(-100f, 0f) // Move left
-
             // Add both sprites
             sprites.addAll(listOf(sprite2))
         }
@@ -66,11 +71,13 @@ fun GameCanvas() {
     LaunchedEffect(fishImage) {
         for(i in 1..items){
             if (fishImage != null) {
-                val sprite = Sprite(image = fishImage,
+                val sprite = SkyItems(image = fishImage,
+                    id = mutableIntStateOf(count++),
                     position = mutableStateOf(Offset(i *100f, 100f))
                 )
                 sprite.setVelocity(0f, 2f) // Move down
                 sprites.addAll(listOf(sprite))
+                skyItems.addAll(listOf(sprite))
             }
             else{
                 println("Fish Image is null")
@@ -101,7 +108,6 @@ fun GameCanvas() {
         val friction = 0.9f       // damping for testing
 
         while (true) {
-
             // Update sensor-controlled sprite (sprite1) using accelerometer data.
             if (sprites.isNotEmpty()) {
                 val sprite1 = sprites[0]
@@ -127,7 +133,13 @@ fun GameCanvas() {
                 if (sprite.checkFloorCollision(screenHeightPx)) {
                     //println("DEBUG: Sprite collided with the floor at Y = ${sprite.position.value.y}")
                 }
+/*
+                if(!sprite.isAlive.value){
+                    sprites.remove(sprite)
+                }
+*/
             }
+
 
 
             // Do things if got collision
