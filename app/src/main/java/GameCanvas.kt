@@ -1,6 +1,7 @@
 // File: GameCanvas.kt
 package astrojump
 
+import android.view.OrientationEventListener
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,6 +23,8 @@ import androidx.compose.ui.graphics.Color
 import astrojump.input.accelerometerSensor
 import astrojump.input.rememberFilteredAcceleration
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import kotlin.math.abs
 
 var items = 10
 @Composable
@@ -77,8 +80,9 @@ fun GameCanvas() {
         threshold = 0f //no dead zone for debugging
     )
 
-    //always get the latest axFiltered value
+    //always get the latest axFiltered and axRaw value
     val latestAx by rememberUpdatedState(newValue =  axFiltered)
+    val latestAxRaw by rememberUpdatedState(newValue = axRaw)
 
     // Game loop that updates sprites and integrates sensor input
     LaunchedEffect(Unit) {
@@ -91,10 +95,18 @@ fun GameCanvas() {
             // Update sensor-controlled sprite (sprite1) using accelerometer data.
             if (sprites.isNotEmpty()) {
                 val sprite1 = sprites[0]
-                val accelerationX = -latestAx * sensitivity
-                val newVelX = sprite1.velocity.value.x + accelerationX * dt
-                // Apply friction.
-                sprite1.velocity.value = Offset(newVelX * friction , sprite1.velocity.value.y)
+                // Use raw sensor input as the indicator for zeroing velocity.
+                if (abs(latestAxRaw) < 0.01f) {
+                    sprite1.velocity.value = Offset.Zero
+                } else {
+                    val accelerationX = -latestAx * sensitivity
+                    val newVelX = sprite1.velocity.value.x + accelerationX * dt
+                    val updatedVelX = newVelX * friction
+                    sprite1.velocity.value = if (abs(updatedVelX) < 0.1f)
+                        Offset.Zero
+                    else
+                        Offset(updatedVelX, sprite1.velocity.value.y)
+                }
             }
 
             //update positions of all sprites
@@ -164,6 +176,7 @@ fun GameCanvas() {
                 Text("axRaw = $axRaw, axFiltered = $axFiltered")
                 if (sprites.isNotEmpty()) {
                     Text("Sprite1 velocityX = ${sprites[0].velocity.value.x}")
+                    Text("Sprite1 X = ${sprites[0].position.value.x}")
                 }
                 //Text("ayRaw = $ayRaw, azRaw = $azRaw")
             }
