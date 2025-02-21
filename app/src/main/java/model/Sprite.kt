@@ -31,10 +31,10 @@ data class Sprite(
         )
 
     // Update function now moves sprite based on velocity
-    fun update(deltaTime: Long) {
+    fun update(dt: Float) {
         position.value = position.value.copy(
-            x = position.value.x + velocity.value.x,
-            y = position.value.y + velocity.value.y
+            x = position.value.x + velocity.value.x * dt,
+            y = position.value.y + velocity.value.y * dt
         )
     }
 
