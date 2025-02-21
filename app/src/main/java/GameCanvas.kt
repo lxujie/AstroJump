@@ -23,14 +23,14 @@ import astrojump.input.accelerometerSensor
 import astrojump.input.rememberFilteredAcceleration
 import androidx.compose.ui.layout.ContentScale
 
-var items = 10;
+var items = 10
 @Composable
 fun GameCanvas() {
     // Load Background Image
     val backgroundImage = loadImageFromAssets("plains.png")
     // Load the AstroBoy image once from assets.
     val astroBoyImage = loadImageFromAssets("AstroBoy1.png")
-    val FishImage = loadImageFromAssets("fish.png")
+    val fishImage = loadImageFromAssets("fish.png")
 
     // Maintain a list of sprites. This state will hold your game objects.
     val sprites = remember { mutableStateListOf<Sprite>() }
@@ -51,10 +51,10 @@ fun GameCanvas() {
             sprites.addAll(listOf(sprite2))
         }
     }
-    LaunchedEffect(FishImage) {
+    LaunchedEffect(fishImage) {
         for(i in 1..items){
-            if (FishImage != null) {
-                val sprite = Sprite(image = FishImage,
+            if (fishImage != null) {
+                val sprite = Sprite(image = fishImage,
                     position = mutableStateOf(Offset(i *100f, 100f))
                 )
                 sprite.setVelocity(0f, 1f) // Move right
@@ -164,9 +164,8 @@ fun GameCanvas() {
                 Text("axRaw = $axRaw, axFiltered = $axFiltered")
                 if (sprites.isNotEmpty()) {
                     Text("Sprite1 velocityX = ${sprites[0].velocity.value.x}")
-                    Text("Sprite1 X = ${sprites[0].position.value.x}")
                 }
-                Text("ayRaw = $ayRaw, azRaw = $azRaw")
+                //Text("ayRaw = $ayRaw, azRaw = $azRaw")
             }
         }
     }
