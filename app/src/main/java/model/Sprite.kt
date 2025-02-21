@@ -31,7 +31,7 @@ data class Sprite(
         )
 
     // Update function now moves sprite based on velocity
-    fun update(dt: Float) {
+    fun update(dt: Float, screenHeight: Float) {
         position.value = position.value.copy(
             x = position.value.x + velocity.value.x * dt,
             y = position.value.y + velocity.value.y * dt
@@ -45,5 +45,10 @@ data class Sprite(
 
     fun checkCollision(other: Sprite): Boolean {
         return this.boundingBox.overlaps(other.boundingBox)
+    }
+
+    // Function to check collision with the floor
+    fun checkFloorCollision(screenHeight: Float): Boolean {
+        return boundingBox.bottom >= screenHeight
     }
 }

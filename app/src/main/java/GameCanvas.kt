@@ -25,10 +25,18 @@ import astrojump.input.rememberFilteredAcceleration
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import kotlin.math.abs
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalConfiguration
 
 var items = 10
 @Composable
 fun GameCanvas() {
+
+    val density = LocalDensity.current
+    val configuration = LocalConfiguration.current
+    val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() } // Convert to pixels
+
     // Load Background Image
     val backgroundImage = loadImageFromAssets("plains.png")
     // Load the AstroBoy image once from assets.
@@ -60,7 +68,7 @@ fun GameCanvas() {
                 val sprite = Sprite(image = fishImage,
                     position = mutableStateOf(Offset(i *100f, 100f))
                 )
-                sprite.setVelocity(0f, 1f) // Move right
+                sprite.setVelocity(0f, 200f) // Move down
                 sprites.addAll(listOf(sprite))
             }
             else{
@@ -92,6 +100,7 @@ fun GameCanvas() {
         val friction = 0.9f       // damping for testing
 
         while (true) {
+
             // Update sensor-controlled sprite (sprite1) using accelerometer data.
             if (sprites.isNotEmpty()) {
                 val sprite1 = sprites[0]
@@ -109,8 +118,17 @@ fun GameCanvas() {
                 }
             }
 
-            //update positions of all sprites
-            sprites.forEach { it.update(dt) }
+
+            // Update positions of all sprites and check floor collision
+            sprites.forEach { sprite ->
+                sprite.update(dt, screenHeightPx)
+
+                // Debug print when a sprite collides with the floor
+                if (sprite.checkFloorCollision(screenHeightPx)) {
+                    println("DEBUG: Sprite collided with the floor at Y = ${sprite.position.value.y}")
+                }
+            }
+
 
             // Do things if got collision
             var collisionDetected = false
@@ -128,7 +146,7 @@ fun GameCanvas() {
             // Do things if no collision
             if (!collisionDetected) {
                 sprites.forEach { it.color.value = Color.White }
-                println("Collision not detected")
+                //println("Collision not detected")
             }
 
             delay(frameTimeMs)
