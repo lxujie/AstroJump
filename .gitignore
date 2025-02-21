@@ -26,4 +26,3 @@ app/build/
 app/build/kotlin/
 app/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/
 /app/build
-/app/build/kotlin

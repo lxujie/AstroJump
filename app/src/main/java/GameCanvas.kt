@@ -19,17 +19,10 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.platform.LocalConfiguration
 
 var items = 10;
 @Composable
 fun GameCanvas() {
-    val density = LocalDensity.current
-    val configuration = LocalConfiguration.current
-    val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() } // Convert to pixels
-
     // Load Background Image
     val backgroundImage = loadImageFromAssets("plains.png")
     // Load the AstroBoy image once from assets.
@@ -76,12 +69,8 @@ fun GameCanvas() {
         while (true) {
             sprites.forEach { sprite ->
                 sprite.update(frameTime)
-
-                // Debug print when sprite collides with the floor
-                if (sprite.checkFloorCollision(screenHeightPx)) {
-                    //println("Sprite hit the floor!")
-                }
             }
+
 
             // Do things if got collision
             var collisionDetected = false
@@ -99,7 +88,7 @@ fun GameCanvas() {
             // Do things if no collision
             if (!collisionDetected) {
                 sprites.forEach { it.color.value = Color.White }
-                //println("Collision not detected")
+                println("Collision not detected")
             }
 
             delay(frameTime)
