@@ -40,12 +40,12 @@ fun GameCanvas() {
 
         if (astroBoyImage != null) {
             // Create first sprite moving right
-            val sprite1 = Sprite(image = astroBoyImage, position = mutableStateOf(Offset(100f, 100f)))
-            sprite1.setVelocity(0f, 0f) // Move right
+            //val sprite1 = Sprite(image = astroBoyImage, position = mutableStateOf(Offset(100f, 100f)))
+            //sprite1.setVelocity(0f, 0f) // Move right
 
             // Create second sprite moving left
-            val sprite2 = Sprite(image = astroBoyImage, position = mutableStateOf(Offset(600f, 100f)))
-            sprite2.setVelocity(-100f, 0f) // Move left
+            val sprite2 = Sprite(image = astroBoyImage, position = mutableStateOf(Offset(600f, 2000f)))
+            //sprite2.setVelocity(-100f, 0f) // Move left
 
             // Add both sprites
             sprites.addAll(listOf(sprite2))
