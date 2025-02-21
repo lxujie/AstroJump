@@ -30,13 +30,23 @@ data class Sprite(
             bottom = position.value.y + height
         )
 
-    // Update function now moves sprite based on velocity
-    fun update(dt: Float, screenHeight: Float) {
-        position.value = position.value.copy(
-            x = position.value.x + velocity.value.x * dt,
-            y = position.value.y + velocity.value.y * dt
-        )
+    fun update(dt: Float, screenWidth: Float, screenHeight: Float) {
+        var newX = position.value.x + velocity.value.x * dt
+        val newY = position.value.y + velocity.value.y * dt
+
+        // Prevent the player from moving off the left or right edge of the screen
+        newX = newX.coerceIn(0f, screenWidth - width)
+
+        position.value = Offset(newX, newY)
+
+        // Prevent the player from falling through the floor
+        if (boundingBox.bottom >= screenHeight) {
+            position.value = position.value.copy(y = screenHeight - height)
+            velocity.value = Offset(velocity.value.x, 0f) // Stop downward movement
+            //println("DEBUG: Player collided with the floor at Y = ${position.value.y}")
+        }
     }
+
 
     // Function to set movement direction
     fun setVelocity(x: Float, y: Float) {

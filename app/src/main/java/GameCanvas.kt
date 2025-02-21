@@ -36,6 +36,7 @@ fun GameCanvas() {
     val density = LocalDensity.current
     val configuration = LocalConfiguration.current
     val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() } // Convert to pixels
+    val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() } // Get screen width
 
     // Load Background Image
     val backgroundImage = loadImageFromAssets("plains.png")
@@ -68,7 +69,7 @@ fun GameCanvas() {
                 val sprite = Sprite(image = fishImage,
                     position = mutableStateOf(Offset(i *100f, 100f))
                 )
-                sprite.setVelocity(0f, 200f) // Move down
+                sprite.setVelocity(0f, 2f) // Move down
                 sprites.addAll(listOf(sprite))
             }
             else{
@@ -119,13 +120,12 @@ fun GameCanvas() {
             }
 
 
-            // Update positions of all sprites and check floor collision
+            // Update positions of all sprites and check collisions
             sprites.forEach { sprite ->
-                sprite.update(dt, screenHeightPx)
+                sprite.update(dt, screenWidthPx, screenHeightPx)
 
-                // Debug print when a sprite collides with the floor
                 if (sprite.checkFloorCollision(screenHeightPx)) {
-                    println("DEBUG: Sprite collided with the floor at Y = ${sprite.position.value.y}")
+                    //println("DEBUG: Sprite collided with the floor at Y = ${sprite.position.value.y}")
                 }
             }
 
