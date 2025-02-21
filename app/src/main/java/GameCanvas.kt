@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -18,6 +19,8 @@ import astrojump.util.loadImageFromAssets
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.Color
+import astrojump.input.accelerometerSensor
+import astrojump.input.rememberFilteredAcceleration
 import androidx.compose.ui.layout.ContentScale
 
 var items = 10;
@@ -38,11 +41,11 @@ fun GameCanvas() {
         if (astroBoyImage != null) {
             // Create first sprite moving right
             //val sprite1 = Sprite(image = astroBoyImage, position = mutableStateOf(Offset(100f, 100f)))
-            //sprite1.setVelocity(1f, 0f) // Move right
+            //sprite1.setVelocity(0f, 0f) // Move right
 
             // Create second sprite moving left
             val sprite2 = Sprite(image = astroBoyImage, position = mutableStateOf(Offset(600f, 2000f)))
-            //sprite2.setVelocity(-1f, 0f) // Move left
+            //sprite2.setVelocity(-100f, 0f) // Move left
 
             // Add both sprites
             sprites.addAll(listOf(sprite2))
@@ -63,14 +66,39 @@ fun GameCanvas() {
         }
     }
 
-    // A simple game loop that updates your sprites.
+    // Read accelerometer sensor values
+    val (axRaw, ayRaw, azRaw) = accelerometerSensor()
+    //filter the raw sensor values
+    val (axFiltered, _, _) = rememberFilteredAcceleration(
+        rawX = axRaw,
+        rawY = ayRaw,
+        rawZ = azRaw,
+        alpha = 0.5f, // moderate smoothing
+        threshold = 0f //no dead zone for debugging
+    )
+
+    //always get the latest axFiltered value
+    val latestAx by rememberUpdatedState(newValue =  axFiltered)
+
+    // Game loop that updates sprites and integrates sensor input
     LaunchedEffect(Unit) {
-        val frameTime = 16L // ~60fps
+        val frameTimeMs = 16L       // ~60fps
+        val dt = frameTimeMs / 1000f
+        val sensitivity = 200f      //testing
+        val friction = 0.9f       // damping for testing
+
         while (true) {
-            sprites.forEach { sprite ->
-                sprite.update(frameTime)
+            // Update sensor-controlled sprite (sprite1) using accelerometer data.
+            if (sprites.isNotEmpty()) {
+                val sprite1 = sprites[0]
+                val accelerationX = -latestAx * sensitivity
+                val newVelX = sprite1.velocity.value.x + accelerationX * dt
+                // Apply friction.
+                sprite1.velocity.value = Offset(newVelX * friction , sprite1.velocity.value.y)
             }
 
+            //update positions of all sprites
+            sprites.forEach { it.update(dt) }
 
             // Do things if got collision
             var collisionDetected = false
@@ -91,7 +119,7 @@ fun GameCanvas() {
                 println("Collision not detected")
             }
 
-            delay(frameTime)
+            delay(frameTimeMs)
         }
     }
 
@@ -131,6 +159,14 @@ fun GameCanvas() {
                         style = androidx.compose.ui.graphics.drawscope.Stroke(width = 3f) // Outline stroke
                     )
                 }
+            }
+            Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+                Text("axRaw = $axRaw, axFiltered = $axFiltered")
+                if (sprites.isNotEmpty()) {
+                    Text("Sprite1 velocityX = ${sprites[0].velocity.value.x}")
+                    Text("Sprite1 X = ${sprites[0].position.value.x}")
+                }
+                Text("ayRaw = $ayRaw, azRaw = $azRaw")
             }
         }
     }
