@@ -133,7 +133,7 @@ fun GameCanvas() {
                 if (sprite.checkFloorCollision(screenHeightPx)) {
                     //println("DEBUG: Sprite collided with the floor at Y = ${sprite.position.value.y}")
                 }
-/*
+/*                  // Remove sprite if it's not alive ( Keep Crashing )
                 if(!sprite.isAlive.value){
                     sprites.remove(sprite)
                 }
