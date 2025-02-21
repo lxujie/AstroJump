@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalConfiguration
 import astrojump.model.Player
 import astrojump.model.SkyItems
+import kotlin.random.Random
 
 var items = 10
 var count = 0
@@ -46,14 +47,13 @@ fun GameCanvas() {
     // Load the AstroBoy image once from assets.
     val astroBoyImage = loadImageFromAssets("AstroBoy1.png")
     val fishImage = loadImageFromAssets("fish.png")
-
     // Maintain a list of sprites. This state will hold your game objects.
     val sprites = remember { mutableStateListOf<Sprite>() }
-
     // Maintain a list of sky items. This state will hold your game objects.
     val skyItems = remember { mutableStateListOf<SkyItems>() }
 
     // Initialize the sprite list once the image is loaded.
+    /*
     LaunchedEffect(astroBoyImage) {
 
         if (astroBoyImage != null) {
@@ -68,20 +68,35 @@ fun GameCanvas() {
             sprites.addAll(listOf(sprite2))
         }
     }
+    */
+
+    // Create Player Sprite
+    LaunchedEffect(astroBoyImage) {
+        if (astroBoyImage != null) {
+            val player = Player(
+                image = astroBoyImage,
+                id = mutableIntStateOf(count++),
+                position = mutableStateOf(Offset(screenWidthPx / 2f, screenHeightPx - 300f))
+            )
+            sprites.add(player) // Add player sprite
+        }
+    }
+
+    // Continuously Spawn Falling Objects Randomly
     LaunchedEffect(fishImage) {
-        for(i in 1..items){
+        while (true) {
             if (fishImage != null) {
-                val sprite = SkyItems(image = fishImage,
+                val spawnX = Random.nextFloat() * (screenWidthPx - 100f)
+                val skyItem = SkyItems(
+                    image = fishImage,
                     id = mutableIntStateOf(count++),
-                    position = mutableStateOf(Offset(i *100f, 100f))
+                    position = mutableStateOf(Offset(spawnX, -100f)) // Start offscreen
                 )
-                sprite.setVelocity(0f, 2f) // Move down
-                sprites.addAll(listOf(sprite))
-                skyItems.addAll(listOf(sprite))
+                skyItem.setVelocity(0f, Random.nextFloat() * 10f + 5f) // Random falling speed
+                sprites.add(skyItem)
+                skyItems.add(skyItem)
             }
-            else{
-                println("Fish Image is null")
-            }
+            delay(1500L) // Spawn every 1.5 seconds
         }
     }
 
@@ -106,60 +121,67 @@ fun GameCanvas() {
         val dt = frameTimeMs / 1000f
         val sensitivity = 200f      //testing
         val friction = 0.9f       // damping for testing
+        val gravity = 5f
 
         while (true) {
             // Update sensor-controlled sprite (sprite1) using accelerometer data.
             if (sprites.isNotEmpty()) {
-                val sprite1 = sprites[0]
+                val player = sprites[0]
                 // Use raw sensor input as the indicator for zeroing velocity.
                 if (abs(latestAxRaw) < 0.01f) {
-                    sprite1.velocity.value = Offset.Zero
+                    player.velocity.value = Offset.Zero
                 } else {
                     val accelerationX = -latestAx * sensitivity
-                    val newVelX = sprite1.velocity.value.x + accelerationX * dt
+                    val newVelX = player.velocity.value.x + accelerationX * dt
                     val updatedVelX = newVelX * friction
-                    sprite1.velocity.value = if (abs(updatedVelX) < 0.1f)
+                    player.velocity.value = if (abs(updatedVelX) < 0.1f)
                         Offset.Zero
                     else
-                        Offset(updatedVelX, sprite1.velocity.value.y)
+                        Offset(updatedVelX, player.velocity.value.y)
                 }
             }
 
 
-            // Update positions of all sprites and check collisions
+            // Update all sprites & apply gravity to falling objects
             sprites.forEach { sprite ->
                 sprite.update(dt, screenWidthPx, screenHeightPx)
 
-                if (sprite.checkFloorCollision(screenHeightPx)) {
-                    //println("DEBUG: Sprite collided with the floor at Y = ${sprite.position.value.y}")
+                if (sprite !is Player) { // Apply gravity to falling objects
+                    sprite.velocity.value = Offset(sprite.velocity.value.x, sprite.velocity.value.y + gravity * dt)
                 }
-/*                  // Remove sprite if it's not alive ( Keep Crashing )
-                if(!sprite.isAlive.value){
-                    sprites.remove(sprite)
+
+                // Remove objects that reach the bottom
+                if (sprite.position.value.y >= screenHeightPx) {
+                    sprite.isAlive.value = false // Only remove if it hits the bottom
                 }
-*/
             }
 
-
+            // Remove sprites that are not alive **after iteration**
+            sprites.removeAll { !it.isAlive.value }
 
             // Do things if got collision
-            var collisionDetected = false
+            //var collisionDetected = false
             for (i in sprites.indices) {
                 for (j in i + 1 until sprites.size) {
                     if (sprites[i].checkCollision(sprites[j])) {
                         sprites[i].color.value = Color.Red
                         sprites[j].color.value = Color.Red
-                        collisionDetected = true
+                        //collisionDetected = true
                         println("Collision detected between Sprite $i and Sprite $j")
                     }
                 }
             }
 
+            // If no collision detected, reset colors
+            sprites.forEach { it.color.value = Color.White }
+
+            /*
             // Do things if no collision
             if (!collisionDetected) {
                 sprites.forEach { it.color.value = Color.White }
                 //println("Collision not detected")
             }
+             */
 
             delay(frameTimeMs)
         }
