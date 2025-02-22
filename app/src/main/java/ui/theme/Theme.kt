@@ -17,6 +17,12 @@ import edu.singaporetech.astrojump.ui.theme.Purple80
 import edu.singaporetech.astrojump.ui.theme.PurpleGrey40
 import edu.singaporetech.astrojump.ui.theme.PurpleGrey80
 
+import android.content.Context
+import android.graphics.Typeface
+import androidx.compose.runtime.remember
+import androidx.compose.ui.text.font.*
+import edu.singaporetech.astrojump.R
+
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
@@ -39,3 +45,12 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+@Composable
+fun rememberCustomFont(): FontFamily {
+    val context = LocalContext.current
+    return remember {
+        FontFamily(
+            Font(resId = R.font.vtks)
+        )
+    }
+}

@@ -28,12 +28,19 @@ import kotlin.math.abs
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.navigation.NavHostController
 import astrojump.model.Player
 import astrojump.model.SkyItems
 import kotlin.random.Random
 
 var items = 10
 var count = 0
+
+@Composable
+fun GameScreen(navController: NavHostController) {
+    GameCanvas()
+}
+
 @Composable
 fun GameCanvas() {
 
