@@ -231,6 +231,7 @@ fun GameCanvas() {
                     )
                 }
             }
+            /*
             Column(modifier = Modifier.align(Alignment.BottomCenter)) {
                 Text("axRaw = $axRaw, axFiltered = $axFiltered")
                 if (sprites.isNotEmpty()) {
@@ -239,6 +240,7 @@ fun GameCanvas() {
                 }
                 //Text("ayRaw = $ayRaw, azRaw = $azRaw")
             }
+            */
         }
     }
 }

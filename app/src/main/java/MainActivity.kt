@@ -17,10 +17,14 @@ import astrojump.ui.GameOverScreen
 import astrojump.ui.MainMenuScreen
 import astrojump.ui.SettingsScreen
 
+import android.content.pm.ActivityInfo
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT // or SCREEN_ORIENTATION_LANDSCAPE
+
+        enableEdgeToEdge()
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
@@ -42,4 +46,3 @@ fun AppNavigation() {
         composable("gameOver") { GameOverScreen(navController) }
     }
 }
-
