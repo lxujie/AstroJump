@@ -119,7 +119,7 @@ fun GameCanvas() {
     LaunchedEffect(Unit) {
         val frameTimeMs = 16L       // ~60fps
         val dt = frameTimeMs / 1000f
-        val sensitivity = 200f      //testing
+        val sensitivity = 800f      //testing
         val friction = 0.9f       // damping for testing
         val gravity = 5f
 
