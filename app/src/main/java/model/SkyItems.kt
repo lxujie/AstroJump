@@ -1,4 +1,4 @@
-// File: Sprite.kt
+// File: SkyItems.kt
 package astrojump.model
 
 import androidx.compose.runtime.mutableStateOf
@@ -10,6 +10,11 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 
+enum class ObjectType {
+    GOOD,
+    BAD
+}
+
 class SkyItems(
     image: ImageBitmap,
     id: MutableState<Int> = mutableIntStateOf(0),
@@ -18,7 +23,8 @@ class SkyItems(
     scale: MutableState<Float> = mutableFloatStateOf(1f),
     color: MutableState<Color> = mutableStateOf(Color.White), // Default color
     velocity: MutableState<Offset> = mutableStateOf(Offset.Zero), // Movement speed
-    isAlive: MutableState<Boolean> = mutableStateOf(true)
+    isAlive: MutableState<Boolean> = mutableStateOf(true),
+    val type: ObjectType
 ) : Sprite(image, id, position, rotation, scale, color, velocity) {
 
     override fun update(dt: Float, screenWidth: Float, screenHeight: Float) {

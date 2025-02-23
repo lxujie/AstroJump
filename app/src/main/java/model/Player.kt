@@ -1,4 +1,4 @@
-// File: Sprite.kt
+// File: Player.kt
 package astrojump.model
 
 import androidx.compose.runtime.mutableStateOf

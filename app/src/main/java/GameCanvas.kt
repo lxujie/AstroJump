@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.NavHostController
+import astrojump.model.ObjectType
 import astrojump.model.Player
 import astrojump.model.SkyItems
 import kotlin.random.Random
@@ -78,25 +79,34 @@ fun GameCanvas() {
         }
     }
 
-    // Initialize Falling Objects (Fish & Sun)
     LaunchedEffect(fishImage, sunImage) {
-        while (true) { // Infinite loop to continuously spawn objects
-            val randomX = Random.nextFloat() * screenWidthPx // Random X position
-            val badVelocity = Random.nextFloat() * 3f + 3f // Bad objects fall between 3f and 6f
+        while (true) {
+            val randomX = Random.nextFloat() * screenWidthPx
+            val badVelocity = Random.nextFloat() * 3f + 3f
 
             fishImage?.let {
-                val badObject = SkyItems(it, mutableIntStateOf(count++), mutableStateOf(Offset(randomX, 0f)))
-                badObject.setVelocity(0f, badVelocity) // Faster fall
+                val badObject = SkyItems(
+                    image = it,
+                    id = mutableIntStateOf(count++),
+                    position = mutableStateOf(Offset(randomX, 0f)),
+                    type = ObjectType.BAD
+                )
+                badObject.setVelocity(0f, badVelocity)
                 sprites.add(badObject)
                 skyItems.add(badObject)
             }
 
-            val randomX2 = Random.nextFloat() * screenWidthPx // Another random X for sun
-            val goodVelocity = Random.nextFloat() * 2f + 1f // Good objects fall between 1f and 3f
+            val randomX2 = Random.nextFloat() * screenWidthPx
+            val goodVelocity = Random.nextFloat() * 2f + 1f
 
             sunImage?.let {
-                val goodObject = SkyItems(it, mutableIntStateOf(count++), mutableStateOf(Offset(randomX2, 0f)))
-                goodObject.setVelocity(0f, goodVelocity) // Slower fall
+                val goodObject = SkyItems(
+                    image = it,
+                    id = mutableIntStateOf(count++),
+                    position = mutableStateOf(Offset(randomX2, 0f)),
+                    type = ObjectType.GOOD
+                )
+                goodObject.setVelocity(0f, goodVelocity)
                 sprites.add(goodObject)
                 skyItems.add(goodObject)
             }
@@ -122,7 +132,7 @@ fun GameCanvas() {
 
     // Game loop that updates sprites and integrates sensor input
     LaunchedEffect(Unit) {
-        val frameTimeMs = 16L // ~60 FPS
+        val frameTimeMs = 16L
         val dt = frameTimeMs / 1000f
         val sensitivity = 200f
         val friction = 0.9f
@@ -130,7 +140,6 @@ fun GameCanvas() {
         while (true) {
             val player = sprites.firstOrNull { it is Player } as? Player
 
-            // Move Player with Accelerometer
             player?.let {
                 if (abs(latestAxRaw) < 0.01f) {
                     it.velocity.value = Offset.Zero
@@ -141,30 +150,29 @@ fun GameCanvas() {
                 }
             }
 
-            // Update Positions and Remove Objects if Needed
             val collidedObjects = mutableListOf<Sprite>()
             val outOfBoundsObjects = mutableListOf<Sprite>()
 
             sprites.forEach { sprite ->
                 sprite.update(dt, screenWidthPx, screenHeightPx)
 
-                // Remove if object falls off the screen
                 if (sprite.position.value.y >= screenHeightPx) {
                     outOfBoundsObjects.add(sprite)
                 }
 
-                // Check Collision with Player
                 if (player != null && sprite is SkyItems && player.checkCollision(sprite)) {
-                    if (sprite.image == fishImage) {
-                        playerHealth = (playerHealth - 1).coerceAtLeast(0) // Decrease health
-                    } else if (sprite.image == sunImage) {
-                        playerScore += 100 // Increase score
+                    when (sprite.type) {
+                        ObjectType.BAD -> {
+                            playerHealth = (playerHealth - 1).coerceAtLeast(0)
+                        }
+                        ObjectType.GOOD -> {
+                            playerScore += 100
+                        }
                     }
-                    collidedObjects.add(sprite) // Mark for removal
+                    collidedObjects.add(sprite)
                 }
             }
 
-            // Remove objects marked for deletion
             sprites.removeAll(collidedObjects + outOfBoundsObjects)
             skyItems.removeAll((collidedObjects + outOfBoundsObjects).toSet())
 
@@ -211,13 +219,11 @@ fun GameCanvas() {
                 }
             }
 
-            /*
             // Display Health & Score
             Column(modifier = Modifier.align(Alignment.TopCenter)) {
                 Text(text = "Health: $playerHealth", color = Color.Red)
                 Text(text = "Score: $playerScore", color = Color.Yellow)
             }
-             */
 
             /*
             Column(modifier = Modifier.align(Alignment.BottomCenter)) {
