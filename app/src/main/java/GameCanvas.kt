@@ -88,7 +88,7 @@ fun GameCanvas() {
                     image = it,
                     id = mutableIntStateOf(count++),
                     position = mutableStateOf(Offset(randomX, 0f)),
-                    //rotation = mutableFloatStateOf(270f),
+                    rotation = mutableFloatStateOf(270f),
                     type = ObjectType.BAD
                 )
                 badObject.setVelocity(0f, badVelocity)
@@ -104,7 +104,7 @@ fun GameCanvas() {
                     image = it,
                     id = mutableIntStateOf(count++),
                     position = mutableStateOf(Offset(randomX2, 0f)),
-                    //rotation = mutableFloatStateOf(355f),
+                    rotation = mutableFloatStateOf(355f),
                     type = ObjectType.GOOD
                 )
                 goodObject.setVelocity(0f, goodVelocity)
@@ -197,13 +197,13 @@ fun GameCanvas() {
             }
             Canvas(modifier = Modifier.fillMaxSize()) {
                 sprites.forEach { sprite ->
-                    // Use transformations if you want to rotate or scale.
                     withTransform({
-                        translate(sprite.position.value.x, sprite.position.value.y)
-                        rotate(degrees = sprite.rotation.value)
+                        // Move the transformation origin to the center of the sprite
+                        translate(sprite.position.value.x + sprite.width / 2, sprite.position.value.y + sprite.height / 2)
+                        rotate(degrees = sprite.rotation.value, pivot = Offset.Zero) // Rotate around center
                         scale(scale = sprite.scale.value)
+                        translate(-sprite.width / 2, -sprite.height / 2)
                     }) {
-                        // Draw the sprite with its top left at (0, 0) since we've already translated.
                         drawImage(image = sprite.image)
                     }
 
