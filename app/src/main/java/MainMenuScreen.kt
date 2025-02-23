@@ -79,7 +79,7 @@ fun MainMenuScreen(navController: NavHostController) {
                 ButtonWithImage(
                     buttonImage = it,
                     text = "Start",
-                    onClick = { navController.navigate("game") }
+                    onClick = { navController.navigate("howToPlay") }
                 )
             }
 

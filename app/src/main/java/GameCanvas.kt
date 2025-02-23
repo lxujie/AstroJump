@@ -34,7 +34,6 @@ import astrojump.model.Player
 import astrojump.model.SkyItems
 import kotlin.random.Random
 
-var items = 10
 var count = 0
 
 @Composable
@@ -51,13 +50,13 @@ fun GameCanvas() {
     val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() } // Get screen width
 
     // Load Background Image
-    val backgroundImage = loadImageFromAssets("plains.png")
+    val backgroundImage = loadImageFromAssets("Space.png")
     // Load the AstroBoy image once from assets.
     val astroBoyImage = loadImageFromAssets("AstroBoy1.png")
     // Bad Object
-    val fishImage = loadImageFromAssets("fish.png")
+    val asteroidImage = loadImageFromAssets("Asteroid.png")
     // Good Object
-    val sunImage = loadImageFromAssets("sun1.png")
+    val starImage = loadImageFromAssets("ShootingStar.png")
     // Maintain a list of sprites. This state will hold your game objects.
     val sprites = remember { mutableStateListOf<Sprite>() }
     // Maintain a list of sky items. This state will hold your game objects.
@@ -79,16 +78,17 @@ fun GameCanvas() {
         }
     }
 
-    LaunchedEffect(fishImage, sunImage) {
+    LaunchedEffect(asteroidImage, starImage) {
         while (true) {
             val randomX = Random.nextFloat() * screenWidthPx
             val badVelocity = Random.nextFloat() * 3f + 3f
 
-            fishImage?.let {
+            asteroidImage?.let {
                 val badObject = SkyItems(
                     image = it,
                     id = mutableIntStateOf(count++),
                     position = mutableStateOf(Offset(randomX, 0f)),
+                    //rotation = mutableFloatStateOf(270f),
                     type = ObjectType.BAD
                 )
                 badObject.setVelocity(0f, badVelocity)
@@ -99,11 +99,12 @@ fun GameCanvas() {
             val randomX2 = Random.nextFloat() * screenWidthPx
             val goodVelocity = Random.nextFloat() * 2f + 1f
 
-            sunImage?.let {
+            starImage?.let {
                 val goodObject = SkyItems(
                     image = it,
                     id = mutableIntStateOf(count++),
                     position = mutableStateOf(Offset(randomX2, 0f)),
+                    //rotation = mutableFloatStateOf(355f),
                     type = ObjectType.GOOD
                 )
                 goodObject.setVelocity(0f, goodVelocity)
