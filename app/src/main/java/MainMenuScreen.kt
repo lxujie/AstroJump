@@ -89,8 +89,8 @@ fun MainMenuScreen(navController: NavHostController) {
             buttonImage?.let {
                 ButtonWithImage(
                     buttonImage = it,
-                    text = "Settings",
-                    onClick = { navController.navigate("settings") }
+                    text = "Game History",
+                    onClick = { navController.navigate("gameHistory") }
                 )
             }
         }
@@ -109,7 +109,7 @@ fun ButtonWithImage(buttonImage: BitmapPainter, text: String, onClick: () -> Uni
             painter = buttonImage,
             contentDescription = "Button Background",
             modifier = Modifier.size(250.dp, 80.dp),
-            contentScale = ContentScale.Fit
+            contentScale = ContentScale.FillWidth
         )
 
         Text(

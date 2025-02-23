@@ -15,11 +15,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import astrojump.ui.GameOverScreen
 import astrojump.ui.MainMenuScreen
-import astrojump.ui.SettingsScreen
 import astrojump.ui.ObjectiveScreen
 import astrojump.ui.HowToPlayScreen
 
 import android.content.pm.ActivityInfo
+import astrojump.ui.GameHistory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +43,7 @@ fun AppNavigation() {
 
     NavHost(navController = navController, startDestination = "mainMenu") {
         composable("mainMenu") { MainMenuScreen(navController) }
-        composable("settings") { SettingsScreen(navController) }
+        composable("gameHistory") { GameHistory(navController) }
         composable("howToPlay") { HowToPlayScreen(navController) }
         composable("objective") { ObjectiveScreen(navController) }
         composable("game") { GameScreen(navController) }

@@ -1,7 +1,6 @@
 // File: GameCanvas.kt
 package astrojump
 
-import android.view.OrientationEventListener
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,21 +16,24 @@ import androidx.compose.ui.graphics.drawscope.withTransform
 import kotlinx.coroutines.delay
 import astrojump.model.Sprite
 import astrojump.util.loadImageFromAssets
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.Color
 import astrojump.input.accelerometerSensor
 import astrojump.input.rememberFilteredAcceleration
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import kotlin.math.abs
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
+import astrojump.data.GameDatabase
+import astrojump.data.GameSession
+import astrojump.data.HighScore
 import astrojump.model.ObjectType
 import astrojump.model.Player
 import astrojump.model.SkyItems
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 var count = 0
@@ -65,6 +67,11 @@ fun GameCanvas() {
     // Game State Variables
     var playerHealth by remember { mutableIntStateOf(5) }  // Player starts with 5 health
     var playerScore by remember { mutableIntStateOf(0) }   // Start score at 0
+    var gameOver by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val db = GameDatabase.getDatabase(context)
+
 
     // Create Player Sprite
     LaunchedEffect(astroBoyImage) {
@@ -165,9 +172,28 @@ fun GameCanvas() {
                     when (sprite.type) {
                         ObjectType.BAD -> {
                             playerHealth = (playerHealth - 1).coerceAtLeast(0)
+                            if (playerHealth == 0 && !gameOver) {
+                                gameOver = true
+                                // Update the database
+                                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                                    val highScoreDao = db.highScoreDao()
+                                    val gameSessionDao = db.gameSessionDao()
+                                    val savedHighScore = highScoreDao.getHighScore()?.score ?: 0
+                                    if (playerScore > savedHighScore) {
+                                        highScoreDao.insertHighScore(HighScore(id = 0, score = playerScore))
+                                    }
+                                    // Log this game session
+                                    gameSessionDao.insertGameSession(
+                                        GameSession(score = playerScore, date = System.currentTimeMillis())
+                                    )
+                                }
+                            }
                         }
                         ObjectType.GOOD -> {
-                            playerScore += 100
+                            // Only increment score if the game is active.
+                            if (!gameOver) {
+                                playerScore += 100
+                            }
                         }
                     }
                     collidedObjects.add(sprite)
@@ -181,7 +207,19 @@ fun GameCanvas() {
         }
     }
 
+    // Inside your GameCanvas composable, before the Box() where you render your UI:
+    var highScore by remember { mutableIntStateOf(0) }
+    val coroutineScope = rememberCoroutineScope()
 
+    // Update high score when the game is over (or when the composable first loads)
+    LaunchedEffect(gameOver) {
+        // When the game is over, or initially, read the high score from the DB
+        coroutineScope.launch {
+            highScore = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                db.highScoreDao().getHighScore()?.score ?: 0
+            }
+        }
+    }
     // Render the sprites on a Canvas.
     Box(modifier = Modifier.fillMaxSize().background(Color.Blue), contentAlignment = Alignment.Center) {
         if (sprites.isEmpty()) {
@@ -224,6 +262,7 @@ fun GameCanvas() {
             Column(modifier = Modifier.align(Alignment.TopCenter)) {
                 Text(text = "Health: $playerHealth", color = Color.Red)
                 Text(text = "Score: $playerScore", color = Color.Yellow)
+                Text(text = "High Score: $highScore", color = Color.Green)
             }
 
             /*
