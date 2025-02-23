@@ -53,29 +53,18 @@ fun GameCanvas() {
     val backgroundImage = loadImageFromAssets("plains.png")
     // Load the AstroBoy image once from assets.
     val astroBoyImage = loadImageFromAssets("AstroBoy1.png")
+    // Bad Object
     val fishImage = loadImageFromAssets("fish.png")
+    // Good Object
+    val sunImage = loadImageFromAssets("sun1.png")
     // Maintain a list of sprites. This state will hold your game objects.
     val sprites = remember { mutableStateListOf<Sprite>() }
     // Maintain a list of sky items. This state will hold your game objects.
     val skyItems = remember { mutableStateListOf<SkyItems>() }
 
-    // Initialize the sprite list once the image is loaded.
-    /*
-    LaunchedEffect(astroBoyImage) {
-
-        if (astroBoyImage != null) {
-            // Create first sprite moving right
-            //val sprite1 = Sprite(image = astroBoyImage, position = mutableStateOf(Offset(100f, 100f)))
-            //sprite1.setVelocity(0f, 0f) // Move right
-
-            // Create second sprite moving left
-            val sprite2 = Player(image = astroBoyImage,id = mutableIntStateOf(count++), position = mutableStateOf(Offset(600f, 2000f)))
-            //sprite2.setVelocity(-100f, 0f) // Move left
-            // Add both sprites
-            sprites.addAll(listOf(sprite2))
-        }
-    }
-    */
+    // Game State Variables
+    var playerHealth by remember { mutableIntStateOf(5) }  // Player starts with 5 health
+    var playerScore by remember { mutableIntStateOf(0) }   // Start score at 0
 
     // Create Player Sprite
     LaunchedEffect(astroBoyImage) {
@@ -89,21 +78,30 @@ fun GameCanvas() {
         }
     }
 
-    // Continuously Spawn Falling Objects Randomly
-    LaunchedEffect(fishImage) {
-        while (true) {
-            if (fishImage != null) {
-                val spawnX = Random.nextFloat() * (screenWidthPx - 100f)
-                val skyItem = SkyItems(
-                    image = fishImage,
-                    id = mutableIntStateOf(count++),
-                    position = mutableStateOf(Offset(spawnX, -100f)) // Start offscreen
-                )
-                skyItem.setVelocity(0f, Random.nextFloat() * 10f + 5f) // Random falling speed
-                sprites.add(skyItem)
-                skyItems.add(skyItem)
+    // Initialize Falling Objects (Fish & Sun)
+    LaunchedEffect(fishImage, sunImage) {
+        while (true) { // Infinite loop to continuously spawn objects
+            val randomX = Random.nextFloat() * screenWidthPx // Random X position
+            val badVelocity = Random.nextFloat() * 3f + 3f // Bad objects fall between 3f and 6f
+
+            fishImage?.let {
+                val badObject = SkyItems(it, mutableIntStateOf(count++), mutableStateOf(Offset(randomX, 0f)))
+                badObject.setVelocity(0f, badVelocity) // Faster fall
+                sprites.add(badObject)
+                skyItems.add(badObject)
             }
-            delay(1500L) // Spawn every 1.5 seconds
+
+            val randomX2 = Random.nextFloat() * screenWidthPx // Another random X for sun
+            val goodVelocity = Random.nextFloat() * 2f + 1f // Good objects fall between 1f and 3f
+
+            sunImage?.let {
+                val goodObject = SkyItems(it, mutableIntStateOf(count++), mutableStateOf(Offset(randomX2, 0f)))
+                goodObject.setVelocity(0f, goodVelocity) // Slower fall
+                sprites.add(goodObject)
+                skyItems.add(goodObject)
+            }
+
+            delay(Random.nextLong(1500L, 2500L))
         }
     }
 
@@ -124,75 +122,56 @@ fun GameCanvas() {
 
     // Game loop that updates sprites and integrates sensor input
     LaunchedEffect(Unit) {
-        val frameTimeMs = 16L       // ~60fps
+        val frameTimeMs = 16L // ~60 FPS
         val dt = frameTimeMs / 1000f
-        val sensitivity = 800f      //testing
-        val friction = 0.9f       // damping for testing
-        val gravity = 5f
+        val sensitivity = 200f
+        val friction = 0.9f
 
         while (true) {
-            // Update sensor-controlled sprite (sprite1) using accelerometer data.
-            if (sprites.isNotEmpty()) {
-                val player = sprites[0]
-                // Use raw sensor input as the indicator for zeroing velocity.
+            val player = sprites.firstOrNull { it is Player } as? Player
+
+            // Move Player with Accelerometer
+            player?.let {
                 if (abs(latestAxRaw) < 0.01f) {
-                    player.velocity.value = Offset.Zero
+                    it.velocity.value = Offset.Zero
                 } else {
                     val accelerationX = -latestAx * sensitivity
-                    val newVelX = player.velocity.value.x + accelerationX * dt
-                    val updatedVelX = newVelX * friction
-                    player.velocity.value = if (abs(updatedVelX) < 0.1f)
-                        Offset.Zero
-                    else
-                        Offset(updatedVelX, player.velocity.value.y)
+                    val newVelX = it.velocity.value.x + accelerationX * dt
+                    it.velocity.value = Offset(newVelX * friction, it.velocity.value.y)
                 }
             }
 
+            // Update Positions and Remove Objects if Needed
+            val collidedObjects = mutableListOf<Sprite>()
+            val outOfBoundsObjects = mutableListOf<Sprite>()
 
-            // Update all sprites & apply gravity to falling objects
             sprites.forEach { sprite ->
                 sprite.update(dt, screenWidthPx, screenHeightPx)
 
-                if (sprite !is Player) { // Apply gravity to falling objects
-                    sprite.velocity.value = Offset(sprite.velocity.value.x, sprite.velocity.value.y + gravity * dt)
-                }
-
-                // Remove objects that reach the bottom
+                // Remove if object falls off the screen
                 if (sprite.position.value.y >= screenHeightPx) {
-                    sprite.isAlive.value = false // Only remove if it hits the bottom
+                    outOfBoundsObjects.add(sprite)
                 }
-            }
 
-            // Remove sprites that are not alive **after iteration**
-            sprites.removeAll { !it.isAlive.value }
-
-            // Do things if got collision
-            //var collisionDetected = false
-            for (i in sprites.indices) {
-                for (j in i + 1 until sprites.size) {
-                    if (sprites[i].checkCollision(sprites[j])) {
-                        sprites[i].color.value = Color.Red
-                        sprites[j].color.value = Color.Red
-                        //collisionDetected = true
-                        println("Collision detected between Sprite $i and Sprite $j")
+                // Check Collision with Player
+                if (player != null && sprite is SkyItems && player.checkCollision(sprite)) {
+                    if (sprite.image == fishImage) {
+                        playerHealth = (playerHealth - 1).coerceAtLeast(0) // Decrease health
+                    } else if (sprite.image == sunImage) {
+                        playerScore += 100 // Increase score
                     }
+                    collidedObjects.add(sprite) // Mark for removal
                 }
             }
 
-            // If no collision detected, reset colors
-            sprites.forEach { it.color.value = Color.White }
-
-            /*
-            // Do things if no collision
-            if (!collisionDetected) {
-                sprites.forEach { it.color.value = Color.White }
-                //println("Collision not detected")
-            }
-             */
+            // Remove objects marked for deletion
+            sprites.removeAll(collidedObjects + outOfBoundsObjects)
+            skyItems.removeAll((collidedObjects + outOfBoundsObjects).toSet())
 
             delay(frameTimeMs)
         }
     }
+
 
     // Render the sprites on a Canvas.
     Box(modifier = Modifier.fillMaxSize().background(Color.Blue), contentAlignment = Alignment.Center) {
@@ -231,6 +210,15 @@ fun GameCanvas() {
                     )
                 }
             }
+
+            /*
+            // Display Health & Score
+            Column(modifier = Modifier.align(Alignment.TopCenter)) {
+                Text(text = "Health: $playerHealth", color = Color.Red)
+                Text(text = "Score: $playerScore", color = Color.Yellow)
+            }
+             */
+
             /*
             Column(modifier = Modifier.align(Alignment.BottomCenter)) {
                 Text("axRaw = $axRaw, axFiltered = $axFiltered")
@@ -239,8 +227,7 @@ fun GameCanvas() {
                     Text("Sprite1 X = ${sprites[0].position.value.x}")
                 }
                 //Text("ayRaw = $ayRaw, azRaw = $azRaw")
-            }
-            */
+             */
         }
     }
 }
