@@ -9,6 +9,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.PI
 
 open class Sprite(
     val image: ImageBitmap,
@@ -25,13 +29,35 @@ open class Sprite(
     val width: Float get() = image.width.toFloat() * scale.value
     val height: Float get() = image.height.toFloat() * scale.value
 
+//    val boundingBox: Rect
+//        get() = Rect(
+//            left = position.value.x, // Adjust if needed
+//            top = position.value.y,
+//            right = position.value.x + width,
+//            bottom = position.value.y + height
+//        )
+
     val boundingBox: Rect
-        get() = Rect(
-            left = position.value.x, // Adjust if needed
-            top = position.value.y,
-            right = position.value.x + width,
-            bottom = position.value.y + height
-        )
+        get() {
+            val centerX = position.value.x + width / 2
+            val centerY = position.value.y + height / 2
+            val halfWidth = width / 2
+            val halfHeight = height / 2
+
+            // Convert degrees to radians manually
+            val rad = (rotation.value * PI / 180.0).toFloat()
+            val cosTheta = cos(rad)
+            val sinTheta = sin(rad)
+
+            // Calculate the rotated bounding box (approximate OBB)
+            return Rect(
+                left = centerX - (halfWidth * abs(cosTheta) + halfHeight * abs(sinTheta)),
+                top = centerY - (halfWidth * abs(sinTheta) + halfHeight * abs(cosTheta)),
+                right = centerX + (halfWidth * abs(cosTheta) + halfHeight * abs(sinTheta)),
+                bottom = centerY + (halfWidth * abs(sinTheta) + halfHeight * abs(cosTheta))
+            )
+        }
+
 
     open fun update(dt: Float, screenWidth: Float, screenHeight: Float) {
         var newX = position.value.x + velocity.value.x * dt
