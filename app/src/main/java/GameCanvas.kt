@@ -143,8 +143,8 @@ fun GameCanvas(navController: NavHostController) {
             val separationThreshold = 50f // Adjust as needed based on object sizes
 
             // Generate random positions for the objects.
-            val randomX = Random.nextFloat() * screenWidthPx
-            var randomX2 = Random.nextFloat() * screenWidthPx
+            val randomX = Random.nextFloat() * (screenWidthPx - 150f)
+            var randomX2 = Random.nextFloat() * (screenWidthPx - 150f)
 
             // If both images are available, ensure they are not too close.
             if (asteroidImage != null && starImage != null) {
