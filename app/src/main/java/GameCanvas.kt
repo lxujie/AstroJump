@@ -83,7 +83,7 @@ fun GameCanvas() {
     }
 
     // Spawn sky items periodically (both good and bad objects)
-    LaunchedEffect(asteroidImage, starImage) {
+    LaunchedEffect(asteroidImage, starImage, playerScore) {
         while (true) {
             // Determine the speed multiplier based on the player's score.
             // Adjust thresholds and multipliers as needed.
@@ -93,9 +93,29 @@ fun GameCanvas() {
                 else                -> 1f
             }
 
-            // Calculate the bad object's falling speed.
+            // Determine delay range based on player's score.
+            val (minDelay, maxDelay) = when {
+                playerScore >= 1000 -> Pair(2000L, 2500L)
+                playerScore >= 500  -> Pair(3000L, 3500L)
+                else                -> Pair(4000L, 5000L)
+            }
+
+            // Define a threshold (in pixels) to ensure a minimum horizontal separation.
+            val separationThreshold = 50f // Adjust as needed based on object sizes
+
+            // Generate random positions for the objects.
             val randomX = Random.nextFloat() * screenWidthPx
-            val baseBadVelocity = Random.nextFloat() * 3f + 3f
+            var randomX2 = Random.nextFloat() * screenWidthPx
+
+            // If both images are available, ensure they are not too close.
+            if (asteroidImage != null && starImage != null) {
+                while (abs(randomX - randomX2) < separationThreshold) {
+                    randomX2 = Random.nextFloat() * screenWidthPx
+                }
+            }
+
+            // Calculate the bad object's falling speed.
+            val baseBadVelocity = Random.nextFloat() * 1f + 2f
             val badVelocity = baseBadVelocity * multiplier
 
             asteroidImage?.let {
@@ -112,8 +132,7 @@ fun GameCanvas() {
             }
 
             // Calculate the good object's falling speed.
-            val randomX2 = Random.nextFloat() * screenWidthPx
-            val baseGoodVelocity = Random.nextFloat() * 2f + 1f
+            val baseGoodVelocity = Random.nextFloat() * 1f + 1f
             val goodVelocity = baseGoodVelocity * multiplier
 
             starImage?.let {
@@ -130,7 +149,7 @@ fun GameCanvas() {
                 skyItems.add(goodObject)
             }
 
-            delay(Random.nextLong(1500L, 2500L))
+            delay(Random.nextLong(minDelay, maxDelay))
         }
     }
 
