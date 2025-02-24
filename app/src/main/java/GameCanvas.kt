@@ -220,12 +220,36 @@ fun GameCanvas(navController: NavHostController) {
             sprites.forEach { sprite ->
                 sprite.update(dt, screenWidthPx, screenHeightPx)
                 if (sprite.position.value.y >= screenHeightPx) {
-                    // If a GOOD object reaches the bottom, reduce player health
                     if (sprite is SkyItems && sprite.type == ObjectType.GOOD) {
                         playerHealth = (playerHealth - 1).coerceAtLeast(0)
+                        if (playerHealth == 0 && !gameOver) {
+                            gameOver = true
+                            // Execute game over actions (update DB, delay, then navigate)
+                            kotlinx.coroutines.CoroutineScope(Dispatchers.IO).launch {
+                                val highScoreDao = db.highScoreDao()
+                                val gameSessionDao = db.gameSessionDao()
+                                val savedHighScore = highScoreDao.getHighScore()?.score ?: 0
+
+                                if (playerScore > savedHighScore) {
+                                    highScoreDao.insertHighScore(HighScore(id = 0, score = playerScore))
+                                }
+                                gameSessionDao.insertGameSession(
+                                    GameSession(score = playerScore, date = System.currentTimeMillis())
+                                )
+
+                                withContext(Dispatchers.Main) {
+                                    delay(300) // Prevent recomposition issues
+                                    if (!hasNavigated) {
+                                        hasNavigated = true
+                                        navController.navigate("gameOver")
+                                    }
+                                }
+                            }
+                        }
                     }
                     outOfBoundsObjects.add(sprite)
                 }
+
                 if (player != null && sprite is SkyItems && player.checkCollision(sprite)) {
                     SFXManager.playCollide()
 
