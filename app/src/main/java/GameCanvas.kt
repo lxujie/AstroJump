@@ -78,7 +78,8 @@ fun GameCanvas(navController: NavHostController) {
             val player = Player(
                 image = astroBoyImage,
                 id = mutableIntStateOf(count++),
-                position = mutableStateOf(Offset(screenWidthPx / 2f, screenHeightPx - 300f))
+                position = mutableStateOf(Offset(screenWidthPx / 2f, screenHeightPx - 300f)),
+                scale = mutableFloatStateOf(0.5f)
             )
             sprites.add(player) // Add player sprite
         }
@@ -124,6 +125,7 @@ fun GameCanvas(navController: NavHostController) {
                     id = mutableIntStateOf(count++),
                     position = mutableStateOf(Offset(randomX2, 0f)),
                     rotation = mutableFloatStateOf(355f),
+                    scale = mutableFloatStateOf(0.5f),
                     type = ObjectType.GOOD
                 )
                 goodObject.setVelocity(0f, goodVelocity)
@@ -266,17 +268,18 @@ fun GameCanvas(navController: NavHostController) {
             }
             Canvas(modifier = Modifier.fillMaxSize()) {
                 sprites.forEach { sprite ->
+
                     withTransform({
-                        // Move the transformation origin to the center of the sprite
+                        // Move to sprite center
                         translate(sprite.position.value.x + sprite.width / 2, sprite.position.value.y + sprite.height / 2)
-                        rotate(degrees = sprite.rotation.value, pivot = Offset.Zero) // Rotate around center
-                        scale(scale = sprite.scale.value)
-                        translate(-sprite.width / 2, -sprite.height / 2)
+                        scale(scale = sprite.scale.value, pivot = Offset.Zero)
+                        rotate(degrees = sprite.rotation.value, pivot = Offset.Zero)
+                        translate(-sprite.width / (2 * sprite.scale.value), -sprite.height / (2 * sprite.scale.value))
                     }) {
                         drawImage(image = sprite.image)
                     }
 
-                    // Draw the updated AABB Bounding Box (rotated)
+                    // Draw the updated bounding box
                     drawRect(
                         color = Color.Green,
                         topLeft = Offset(sprite.boundingBox.left, sprite.boundingBox.top),
@@ -284,7 +287,7 @@ fun GameCanvas(navController: NavHostController) {
                             width = sprite.boundingBox.width,
                             height = sprite.boundingBox.height
                         ),
-                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = 3f) // Outline stroke
+                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = 3f)
                     )
                 }
             }
