@@ -274,7 +274,7 @@ fun GameCanvas(navController: NavHostController) {
                                     delay(300) // Prevent recomposition issues
                                     if (!hasNavigated) {
                                         hasNavigated = true
-                                        navController.navigate("gameOver")
+                                        navController.navigate("gameOver/$playerScore")
                                     }
                                 }
                             }
