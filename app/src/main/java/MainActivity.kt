@@ -19,6 +19,8 @@ import astrojump.ui.ObjectiveScreen
 import astrojump.ui.HowToPlayScreen
 
 import android.content.pm.ActivityInfo
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import astrojump.ui.GameHistory
 
 class MainActivity : ComponentActivity() {
@@ -47,6 +49,15 @@ fun AppNavigation() {
         composable("howToPlay") { HowToPlayScreen(navController) }
         composable("objective") { ObjectiveScreen(navController) }
         composable("game") { GameScreen(navController) }
-        composable("gameOver") { GameOverScreen(navController) }
+        composable(
+            route = "gameOver/{score}",
+            arguments = listOf(
+                navArgument("score") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            // Extract the score from navigation arguments
+            val score = backStackEntry.arguments?.getInt("score") ?: 0
+            GameOverScreen(navController, score)
+        }
     }
 }

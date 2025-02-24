@@ -26,6 +26,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
+import astrojump.util.ButtonWithImage
 
 @Composable
 fun GameHistory(navController: NavHostController) {

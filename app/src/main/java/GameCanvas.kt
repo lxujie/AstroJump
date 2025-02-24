@@ -4,11 +4,22 @@ package astrojump
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -26,6 +37,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import astrojump.data.GameDatabase
 import astrojump.data.GameSession
@@ -33,6 +47,7 @@ import astrojump.data.HighScore
 import astrojump.model.ObjectType
 import astrojump.model.Player
 import astrojump.model.SkyItems
+import astrojump.ui.theme.rememberCustomFont
 import astrojump.util.SFXManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -68,6 +83,8 @@ fun GameCanvas(navController: NavHostController) {
     var playerHealth by remember { mutableIntStateOf(5) }  // Player starts with 5 health
     var playerScore by remember { mutableIntStateOf(0) }   // Start score at 0
     var gameOver by remember { mutableStateOf(false) }
+    // New: Pause state
+    var isPaused by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val db = GameDatabase.getDatabase(context)
@@ -92,19 +109,30 @@ fun GameCanvas(navController: NavHostController) {
     // Spawn sky items periodically (both good and bad objects)
     LaunchedEffect(asteroidImage, starImage) {
         while (true) {
+            // Skip spawning if game is paused or over
+            if (isPaused || gameOver) {
+                delay(100) // Short delay to prevent busy waiting
+                continue
+            }
+
             // Read the current score from state
             val currentScore = playerScore
 
             // Determine the speed multiplier based on the player's score.
             // Adjust thresholds and multipliers as needed.
             val multiplier = when {
-                currentScore >= 1000 -> 1.2f
-                currentScore >= 500  -> 1.1f
+                currentScore >= 3000 -> 2.5f
+                currentScore >= 2000 -> 2f
+                currentScore >= 1500 -> 1.6f
+                currentScore >= 1000 -> 1.4f
+                currentScore >= 500  -> 1.2f
                 else                -> 1f
             }
 
             // Determine delay range based on player's score.
             val (minDelay, maxDelay) = when {
+                currentScore >= 3000 -> Pair(1000L, 1500L)
+                currentScore >= 2000 -> Pair(2000L, 2500L)
                 currentScore >= 1000 -> Pair(3000L, 3500L)
                 currentScore >= 500  -> Pair(4000L, 4500L)
                 else                -> Pair(5000L, 5500L)
@@ -125,7 +153,7 @@ fun GameCanvas(navController: NavHostController) {
             }
 
             // Calculate the bad object's falling speed.
-            val baseBadVelocity = Random.nextFloat() * 1f + 1f
+            val baseBadVelocity = Random.nextFloat() * 2f + 1f
             val badVelocity = baseBadVelocity * multiplier
 
             asteroidImage?.let {
@@ -185,6 +213,12 @@ fun GameCanvas(navController: NavHostController) {
         val friction = 0.9f
 
         while (true) {
+            // Skip updates if game is paused
+            if (isPaused) {
+                delay(100) // Short delay to prevent busy waiting
+                continue
+            }
+
             val player = sprites.firstOrNull { it is Player } as? Player
 
             player?.let {
@@ -241,7 +275,7 @@ fun GameCanvas(navController: NavHostController) {
                                         delay(1000) // Delay to prevent recomposition issues
                                         if (!hasNavigated) {
                                             hasNavigated = true
-                                            navController.navigate("gameOver")
+                                            navController.navigate("gameOver/$playerScore")
                                         }
                                     }
                                 }
@@ -267,7 +301,6 @@ fun GameCanvas(navController: NavHostController) {
     var highScore by remember { mutableIntStateOf(0) }
     val coroutineScope = rememberCoroutineScope()
 
-
     // Update high score when the game is over (or when the composable first loads)
     LaunchedEffect(gameOver) {
         // When the game is over, or initially, read the high score from the DB
@@ -277,6 +310,7 @@ fun GameCanvas(navController: NavHostController) {
             }
         }
     }
+
     // Render the sprites on a Canvas.
     Box(modifier = Modifier.fillMaxSize().background(Color.Blue), contentAlignment = Alignment.Center) {
         if (sprites.isEmpty()) {
@@ -317,10 +351,99 @@ fun GameCanvas(navController: NavHostController) {
             }
 
             // Display Health & Score
-            Column(modifier = Modifier.align(Alignment.TopCenter)) {
-                Text(text = "Health: $playerHealth", color = Color.Red)
-                Text(text = "Score: $playerScore", color = Color.Yellow)
-                Text(text = "High Score: $highScore", color = Color.Green)
+            Column(modifier = Modifier.align(Alignment.TopStart)) {
+                Text(
+                    text = "Health: $playerHealth",
+                    fontFamily = rememberCustomFont(),
+                    fontSize = 18.sp, // Slightly smaller than "Game Over"
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Red,
+                    modifier = Modifier.padding(bottom = 2.dp)
+                )
+                Text(
+                    text = "Score: $playerScore",
+                    fontFamily = rememberCustomFont(),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Yellow,
+                    modifier = Modifier.padding(bottom = 2.dp)
+                )
+                Text(
+                    text = "High Score: $highScore",
+                    fontFamily = rememberCustomFont(),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier.padding(bottom = 2.dp)
+                )
+            }
+
+            // Pause button in top-right corner with custom implementation
+            Box(modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(16.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .width(48.dp)
+                        .height(48.dp)
+                        .background(Color.DarkGray.copy(alpha = 0.7f), shape = RoundedCornerShape(22.dp))
+                        .clickable { isPaused = !isPaused },
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Simple text-based pause/play indicator
+                    Text(
+                        text = if (isPaused) "▶" else "❚❚",
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+
+            // Pause overlay
+            if (isPaused) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.7f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Text(
+                            text = "PAUSED",
+                            color = Color.White,
+                            fontSize = 36.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Box(
+                            modifier = Modifier
+                                .width(160.dp)
+                                .height(48.dp)
+                                .background(Color(0xFF4CAF50), shape = RoundedCornerShape(8.dp))
+                                .clickable { isPaused = false }
+                                .padding(8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("Resume", color = Color.White, fontSize = 16.sp)
+                        }
+                        Box(
+                            modifier = Modifier
+                                .width(160.dp)
+                                .height(48.dp)
+                                .background(Color(0xFFF44336), shape = RoundedCornerShape(8.dp))
+                                .clickable { navController.navigate("mainMenu") }
+                                .padding(8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("Quit Game", color = Color.White, fontSize = 16.sp)
+                        }
+                    }
+                }
             }
 
             /*

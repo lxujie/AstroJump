@@ -21,11 +21,12 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import astrojump.ui.theme.rememberCustomFont
 import android.view.SoundEffectConstants
 import androidx.compose.ui.platform.LocalView
+import astrojump.util.ButtonWithImage
 
 @Composable
 fun MainMenuScreen(navController: NavHostController) {
     val backgroundImage = loadImageFromAssets("Space.png")?.let { BitmapPainter(it) }
-    val astroboyImage = loadImageFromAssets("astrodeath2.png")?.let { BitmapPainter(it) }
+    val astroboyImage = loadImageFromAssets("AstroBoy1.png")?.let { BitmapPainter(it) }
     val buttonImage = loadImageFromAssets("Button.png")?.let { BitmapPainter(it) }
 
 
@@ -96,36 +97,5 @@ fun MainMenuScreen(navController: NavHostController) {
                 )
             }
         }
-    }
-}
-
-@Composable
-fun ButtonWithImage(buttonImage: BitmapPainter, text: String, onClick: () -> Unit) {
-    val customFont = rememberCustomFont()
-    val view = LocalView.current
-
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(12.dp))
-            .clickable {
-                view.playSoundEffect(SoundEffectConstants.CLICK) // Play default Android click sound
-                onClick()
-            }
-    ) {
-        Image(
-            painter = buttonImage,
-            contentDescription = "Button Background",
-            modifier = Modifier.size(250.dp, 80.dp),
-            contentScale = ContentScale.FillWidth
-        )
-
-        Text(
-            text = text,
-            fontFamily = customFont,
-            color = Color.White,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.Center)
-        )
     }
 }
