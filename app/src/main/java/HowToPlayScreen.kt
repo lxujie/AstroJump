@@ -1,5 +1,3 @@
-package astrojump.ui
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import astrojump.util.loadImageFromAssets
+import util.loadImageFromAssets
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import astrojump.ui.theme.rememberCustomFont
 import kotlinx.coroutines.delay

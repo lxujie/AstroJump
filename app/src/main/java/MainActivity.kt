@@ -1,5 +1,4 @@
 // File: MainActivity.kt
-package astrojump
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,13 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import astrojump.ui.GameOverScreen
-import astrojump.ui.MainMenuScreen
-import astrojump.ui.ObjectiveScreen
-import astrojump.ui.HowToPlayScreen
 
 import android.content.pm.ActivityInfo
-import astrojump.ui.GameHistory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

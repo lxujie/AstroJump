@@ -1,5 +1,3 @@
-package astrojump.ui
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text

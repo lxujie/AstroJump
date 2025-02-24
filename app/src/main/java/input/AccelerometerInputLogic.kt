@@ -1,4 +1,4 @@
-package astrojump.input
+package input
 
 import androidx.compose.runtime.*
 import kotlin.math.sqrt

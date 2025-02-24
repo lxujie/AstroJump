@@ -1,4 +1,4 @@
-package astrojump.input
+package input
 
 import android.hardware.Sensor
 import android.hardware.SensorEvent

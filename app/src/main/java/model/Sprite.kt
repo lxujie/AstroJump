@@ -1,5 +1,5 @@
 // File: Sprite.kt
-package astrojump.model
+package model
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.MutableState

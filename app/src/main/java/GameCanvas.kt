@@ -1,5 +1,4 @@
 // File: GameCanvas.kt
-package astrojump
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -14,12 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.withTransform
 import kotlinx.coroutines.delay
-import astrojump.model.Sprite
-import astrojump.util.loadImageFromAssets
+import model.Sprite
+import util.loadImageFromAssets
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.Color
-import astrojump.input.accelerometerSensor
-import astrojump.input.rememberFilteredAcceleration
+import input.accelerometerSensor
+import input.rememberFilteredAcceleration
 import androidx.compose.ui.layout.ContentScale
 import kotlin.math.abs
 import androidx.compose.ui.platform.LocalDensity
@@ -30,9 +29,9 @@ import androidx.navigation.NavHostController
 import astrojump.data.GameDatabase
 import astrojump.data.GameSession
 import astrojump.data.HighScore
-import astrojump.model.ObjectType
-import astrojump.model.Player
-import astrojump.model.SkyItems
+import model.ObjectType
+import model.Player
+import model.SkyItems
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 

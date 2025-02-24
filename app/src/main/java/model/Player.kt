@@ -1,5 +1,5 @@
 // File: Player.kt
-package astrojump.model
+package model
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.MutableState
@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 
 class Player(
