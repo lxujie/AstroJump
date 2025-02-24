@@ -245,9 +245,9 @@ fun GameCanvas() {
                         drawImage(image = sprite.image)
                     }
 
-                    // Draw the AABB Bounding Box
+                    // Draw the updated AABB Bounding Box (rotated)
                     drawRect(
-                        color = Color.Green, // Box color
+                        color = Color.Green,
                         topLeft = Offset(sprite.boundingBox.left, sprite.boundingBox.top),
                         size = androidx.compose.ui.geometry.Size(
                             width = sprite.boundingBox.width,
