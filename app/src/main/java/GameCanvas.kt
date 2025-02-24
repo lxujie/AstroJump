@@ -165,6 +165,10 @@ fun GameCanvas() {
             sprites.forEach { sprite ->
                 sprite.update(dt, screenWidthPx, screenHeightPx)
                 if (sprite.position.value.y >= screenHeightPx) {
+                    // If a GOOD object reaches the bottom, reduce player health
+                    if (sprite is SkyItems && sprite.type == ObjectType.GOOD) {
+                        playerHealth = (playerHealth - 1).coerceAtLeast(0)
+                    }
                     outOfBoundsObjects.add(sprite)
                 }
 
