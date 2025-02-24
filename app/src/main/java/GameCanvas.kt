@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -26,6 +28,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import astrojump.data.GameDatabase
 import astrojump.data.GameSession
@@ -355,10 +358,32 @@ fun GameCanvas(navController: NavHostController) {
             }
 
             // Display Health & Score
-            Column(modifier = Modifier.align(Alignment.TopCenter)) {
-                Text(text = "Health: $playerHealth", color = Color.Red)
-                Text(text = "Score: $playerScore", color = Color.Yellow)
-                Text(text = "High Score: $highScore", color = Color.Green)
+            Box(modifier = Modifier.fillMaxSize()) {
+                Text(
+                    text = "Health: $playerHealth",
+                    color = Color.Red,
+                    fontSize = 20.sp,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(start = 16.dp, top = 16.dp)
+                )
+
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(end = 16.dp, top = 16.dp)
+                ) {
+                    Text(text = "Score: $playerScore",
+                        color = Color.Yellow,
+                        fontSize = 20.sp
+                    )
+                    Text(
+                        text = "High Score: $highScore",
+                        color = Color.Green,
+                        fontSize = 20.sp
+                    )
+                }
+
             }
 
             /*
