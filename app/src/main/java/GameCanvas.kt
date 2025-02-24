@@ -253,17 +253,18 @@ fun GameCanvas() {
             }
             Canvas(modifier = Modifier.fillMaxSize()) {
                 sprites.forEach { sprite ->
+
                     withTransform({
-                        // Move the transformation origin to the center of the sprite
+                        // Move to sprite center
                         translate(sprite.position.value.x + sprite.width / 2, sprite.position.value.y + sprite.height / 2)
-                        rotate(degrees = sprite.rotation.value, pivot = Offset.Zero) // Rotate around center
-                        scale(scale = sprite.scale.value)
-                        translate(-sprite.width / 2, -sprite.height / 2)
+                        scale(scale = sprite.scale.value, pivot = Offset.Zero)
+                        rotate(degrees = sprite.rotation.value, pivot = Offset.Zero)
+                        translate(-sprite.width / (2 * sprite.scale.value), -sprite.height / (2 * sprite.scale.value))
                     }) {
                         drawImage(image = sprite.image)
                     }
 
-                    // Draw the updated AABB Bounding Box (rotated)
+                    // Draw the updated bounding box
                     drawRect(
                         color = Color.Green,
                         topLeft = Offset(sprite.boundingBox.left, sprite.boundingBox.top),
@@ -271,7 +272,7 @@ fun GameCanvas() {
                             width = sprite.boundingBox.width,
                             height = sprite.boundingBox.height
                         ),
-                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = 3f) // Outline stroke
+                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = 3f)
                     )
                 }
             }

@@ -29,27 +29,23 @@ open class Sprite(
     val width: Float get() = image.width.toFloat() * scale.value
     val height: Float get() = image.height.toFloat() * scale.value
 
-//    val boundingBox: Rect
-//        get() = Rect(
-//            left = position.value.x, // Adjust if needed
-//            top = position.value.y,
-//            right = position.value.x + width,
-//            bottom = position.value.y + height
-//        )
 
     val boundingBox: Rect
         get() {
-            val centerX = position.value.x + width / 2
-            val centerY = position.value.y + height / 2
-            val halfWidth = width / 2
-            val halfHeight = height / 2
+            val scaledWidth = image.width * scale.value
+            val scaledHeight = image.height * scale.value
+            val halfWidth = scaledWidth / 2
+            val halfHeight = scaledHeight / 2
 
-            // Convert degrees to radians manually
+            val centerX = position.value.x + halfWidth
+            val centerY = position.value.y + halfHeight
+
+            // Convert degrees to radians
             val rad = (rotation.value * PI / 180.0).toFloat()
             val cosTheta = cos(rad)
             val sinTheta = sin(rad)
 
-            // Calculate the rotated bounding box (approximate OBB)
+            // Compute the correct bounding box with scaling and positioning
             return Rect(
                 left = centerX - (halfWidth * abs(cosTheta) + halfHeight * abs(sinTheta)),
                 top = centerY - (halfWidth * abs(sinTheta) + halfHeight * abs(cosTheta)),
