@@ -58,7 +58,7 @@ fun GameCanvas(navController: NavHostController) {
     val backgroundImage = loadImageFromAssets("Space.png")
     val astroBoyImage = loadImageFromAssets("AstroBoy1.png")
     val asteroidImage = loadImageFromAssets("Asteroid.png")
-    val starImage = loadImageFromAssets("ShootingStar.png")
+    val starImage = loadImageFromAssets("Star.png")
 
     // Game sprites and sky item lists
     val sprites = remember { mutableStateListOf<Sprite>() }
@@ -105,6 +105,8 @@ fun GameCanvas(navController: NavHostController) {
 
             // Determine delay range based on player's score.
             val (minDelay, maxDelay) = when {
+                currentScore >= 10000 -> Pair(1000L, 1500L)
+                currentScore >= 5000 -> Pair(2000L, 2500L)
                 currentScore >= 1000 -> Pair(3000L, 3500L)
                 currentScore >= 500  -> Pair(4000L, 4500L)
                 else                -> Pair(5000L, 5500L)
@@ -124,23 +126,33 @@ fun GameCanvas(navController: NavHostController) {
                 }
             }
 
-            // Calculate the bad object's falling speed.
-            val baseBadVelocity = Random.nextFloat() * 1f + 1f
-            val badVelocity = baseBadVelocity * multiplier
-
-            asteroidImage?.let {
-                val badObject = SkyItems(
-                    image = it,
-                    id = mutableIntStateOf(count++),
-                    position = mutableStateOf(Offset(randomX, 0f)),
-                    rotation = mutableFloatStateOf(270f),
-                    type = ObjectType.BAD
-                )
-                badObject.setVelocity(0f, badVelocity)
-                sprites.add(badObject)
-                skyItems.add(badObject)
+            val rng = when{
+                currentScore >= 8000 -> 5
+                currentScore >= 4000 -> 4
+                currentScore >= 2000 -> 3
+                currentScore >= 250  -> 2
+                else                -> 1
             }
 
+            if ((Random.nextInt(0,5)) < rng ) {
+                // Calculate the bad object's falling speed.
+                val baseBadVelocity = Random.nextFloat() * 1f + 1f
+                val badVelocity = baseBadVelocity * multiplier
+
+                asteroidImage?.let {
+                    val badObject = SkyItems(
+                        image = it,
+                        id = mutableIntStateOf(count++),
+                        position = mutableStateOf(Offset(randomX, 0f)),
+                        scale = mutableFloatStateOf(2f),
+                        //rotation = mutableFloatStateOf(270f),
+                        type = ObjectType.BAD
+                    )
+                    badObject.setVelocity(0f, badVelocity)
+                    sprites.add(badObject)
+                    skyItems.add(badObject)
+                }
+            }
             // Calculate the good object's falling speed.
             val baseGoodVelocity = Random.nextFloat() * 1f + 0.5f
             val goodVelocity = baseGoodVelocity * multiplier
@@ -150,7 +162,7 @@ fun GameCanvas(navController: NavHostController) {
                     image = it,
                     id = mutableIntStateOf(count++),
                     position = mutableStateOf(Offset(randomX2, 0f)),
-                    rotation = mutableFloatStateOf(355f),
+                    //rotation = mutableFloatStateOf(355f),
                     scale = mutableFloatStateOf(0.5f),
                     type = ObjectType.GOOD
                 )
