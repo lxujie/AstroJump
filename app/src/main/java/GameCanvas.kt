@@ -33,18 +33,20 @@ import astrojump.data.HighScore
 import astrojump.model.ObjectType
 import astrojump.model.Player
 import astrojump.model.SkyItems
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 var count = 0
 
 @Composable
 fun GameScreen(navController: NavHostController) {
-    GameCanvas()
+    GameCanvas(navController = NavHostController(LocalContext.current))
 }
 
 @Composable
-fun GameCanvas() {
+fun GameCanvas(navController: NavHostController) {
 
     val density = LocalDensity.current
     val configuration = LocalConfiguration.current
@@ -68,6 +70,7 @@ fun GameCanvas() {
 
     val context = LocalContext.current
     val db = GameDatabase.getDatabase(context)
+    var hasNavigated by remember { mutableStateOf(false) }
 
     // Create Player Sprite when asset is loaded
     LaunchedEffect(astroBoyImage) {
@@ -189,19 +192,30 @@ fun GameCanvas() {
                         ObjectType.BAD -> {
                             playerHealth = (playerHealth - 1).coerceAtLeast(0)
                             if (playerHealth == 0 && !gameOver) {
-                                gameOver = true
+                                gameOver = true // Set immediately so UI updates, but delay navigation
+
                                 // Update the database
                                 kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
                                     val highScoreDao = db.highScoreDao()
                                     val gameSessionDao = db.gameSessionDao()
                                     val savedHighScore = highScoreDao.getHighScore()?.score ?: 0
+
                                     if (playerScore > savedHighScore) {
                                         highScoreDao.insertHighScore(HighScore(id = 0, score = playerScore))
                                     }
+
                                     // Log this game session
                                     gameSessionDao.insertGameSession(
                                         GameSession(score = playerScore, date = System.currentTimeMillis())
                                     )
+
+                                    withContext(Dispatchers.Main) {
+                                        delay(300) // Delay to prevent recomposition issues
+                                        if (!hasNavigated) {
+                                            hasNavigated = true
+                                            navController.navigate("gameOver")
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -226,6 +240,7 @@ fun GameCanvas() {
     // Inside your GameCanvas composable, before the Box() where you render your UI:
     var highScore by remember { mutableIntStateOf(0) }
     val coroutineScope = rememberCoroutineScope()
+
 
     // Update high score when the game is over (or when the composable first loads)
     LaunchedEffect(gameOver) {
