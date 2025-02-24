@@ -75,7 +75,8 @@ fun GameCanvas() {
             val player = Player(
                 image = astroBoyImage,
                 id = mutableIntStateOf(count++),
-                position = mutableStateOf(Offset(screenWidthPx / 2f, screenHeightPx - 300f))
+                position = mutableStateOf(Offset(screenWidthPx / 2f, screenHeightPx - 300f)),
+                scale = mutableFloatStateOf(0.5f)
             )
             sprites.add(player) // Add player sprite
         }
@@ -121,6 +122,7 @@ fun GameCanvas() {
                     id = mutableIntStateOf(count++),
                     position = mutableStateOf(Offset(randomX2, 0f)),
                     rotation = mutableFloatStateOf(355f),
+                    scale = mutableFloatStateOf(0.5f),
                     type = ObjectType.GOOD
                 )
                 goodObject.setVelocity(0f, goodVelocity)
