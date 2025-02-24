@@ -1,4 +1,4 @@
-package util
+package astrojump.util
 
 import android.graphics.BitmapFactory
 import androidx.compose.runtime.*
