@@ -43,7 +43,7 @@ var count = 0
 
 @Composable
 fun GameScreen(navController: NavHostController) {
-    GameCanvas(navController = NavHostController(LocalContext.current))
+    GameCanvas(navController)
 }
 
 @Composable

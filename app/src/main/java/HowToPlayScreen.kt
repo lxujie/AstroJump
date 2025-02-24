@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -28,10 +29,18 @@ fun HowToPlayScreen(navController: NavHostController) {
     val backgroundImage = loadImageFromAssets("Space.png")?.let { BitmapPainter(it) }
     val phoneImage = loadImageFromAssets("Phone.png")?.let { BitmapPainter(it) }
 
+    // A flag to ensure we only navigate once.
+    var hasNavigated by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .clickable { navController.navigate("objective") }
+            .clickable {
+                if (!hasNavigated) {
+                    hasNavigated = true
+                    navController.navigate("objective")
+                }
+            }
     ) {
         // Background Image
         backgroundImage?.let {
@@ -54,35 +63,30 @@ fun HowToPlayScreen(navController: NavHostController) {
                 Image(
                     painter = it,
                     contentDescription = "Phone Image",
-                    modifier = Modifier
-                        .size(160.dp)
-                    //.padding(bottom = 12.dp),
+                    modifier = Modifier.size(160.dp)
                 )
             }
-            //Spacer(modifier = Modifier.width(10.dp))
-            // Title Text "Astroboy"
+            // Title Text "Tilt phone to move"
             Text(
                 text = "Tilt phone to move",
-                fontFamily = rememberCustomFont(), // Use your custom font here
-                fontSize = 20.sp, // Large title font size
+                fontFamily = rememberCustomFont(),
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = Color.White
             )
         }
     }
 
     // Timer for 5 seconds
     var timeLeft by remember { mutableIntStateOf(5) }
-
-    // This launches a coroutine that decreases the timer each second.
     LaunchedEffect(Unit) {
         while (timeLeft > 0) {
             delay(1000L) // wait for 1 second
             timeLeft--
         }
-        if(timeLeft == 0){
+        if (timeLeft == 0 && !hasNavigated) {
+            hasNavigated = true
             navController.navigate("objective")
         }
-
     }
 }

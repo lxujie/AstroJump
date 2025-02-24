@@ -19,6 +19,7 @@ class AstroJumpApp : Application() {
 
         try {
             mediaPlayer = MediaPlayer.create(this, R.raw.bgm)
+            mediaPlayer.setVolume(0.3f, 0.3f) // Set volume to 30%
             mediaPlayer.isLooping = true
             mediaPlayer.start()
         } catch (e: Exception) {
