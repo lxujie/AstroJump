@@ -1,3 +1,4 @@
+// File: GameOverScreen.kt
 package astrojump.ui
 
 import androidx.compose.animation.core.animateFloatAsState

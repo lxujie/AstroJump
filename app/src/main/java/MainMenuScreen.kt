@@ -1,18 +1,13 @@
 package astrojump.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -28,7 +23,7 @@ fun MainMenuScreen(navController: NavHostController) {
     val backgroundImage = loadImageFromAssets("Space.png")?.let { BitmapPainter(it) }
     val astroboyImage = loadImageFromAssets("AstroBoy1.png")?.let { BitmapPainter(it) }
     val buttonImage = loadImageFromAssets("Button.png")?.let { BitmapPainter(it) }
-
+    val view = LocalView.current
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Background Image
@@ -54,15 +49,12 @@ fun MainMenuScreen(navController: NavHostController) {
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.padding(bottom = 32.dp)
             ) {
-
-                //Spacer(modifier = Modifier.width(10.dp))
                 // Title Text "Astroboy"
                 Text(
                     text = "Astroboy",
-                    fontFamily = rememberCustomFont(), // Use your custom font here
-                    fontSize = 50.sp, // Large title font size
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    fontFamily = rememberCustomFont(),
+                    fontSize = 50.sp,
+                    color = androidx.compose.ui.graphics.Color.White
                 )
 
                 // Astroboy Mascot
@@ -82,18 +74,24 @@ fun MainMenuScreen(navController: NavHostController) {
                 ButtonWithImage(
                     buttonImage = it,
                     text = "Start",
-                    onClick = { navController.navigate("howToPlay") }
+                    onClick = {
+                        view.playSoundEffect(SoundEffectConstants.CLICK)
+                        navController.navigate("howToPlay")
+                    }
                 )
             }
 
             Spacer(modifier = Modifier.height(26.dp))
 
-            // Settings Button
+            // Game History Button
             buttonImage?.let {
                 ButtonWithImage(
                     buttonImage = it,
                     text = "Game History",
-                    onClick = { navController.navigate("gameHistory") }
+                    onClick = {
+                        view.playSoundEffect(SoundEffectConstants.CLICK)
+                        navController.navigate("gameHistory")
+                    }
                 )
             }
         }
