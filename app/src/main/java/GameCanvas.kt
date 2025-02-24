@@ -90,21 +90,24 @@ fun GameCanvas(navController: NavHostController) {
     }
 
     // Spawn sky items periodically (both good and bad objects)
-    LaunchedEffect(asteroidImage, starImage, playerScore) {
+    LaunchedEffect(asteroidImage, starImage) {
         while (true) {
+            // Read the current score from state
+            val currentScore = playerScore
+
             // Determine the speed multiplier based on the player's score.
             // Adjust thresholds and multipliers as needed.
             val multiplier = when {
-                playerScore >= 1000 -> 1.2f
-                playerScore >= 500  -> 1.1f
+                currentScore >= 1000 -> 1.2f
+                currentScore >= 500  -> 1.1f
                 else                -> 1f
             }
 
             // Determine delay range based on player's score.
             val (minDelay, maxDelay) = when {
-                playerScore >= 1000 -> Pair(2000L, 2500L)
-                playerScore >= 500  -> Pair(3000L, 3500L)
-                else                -> Pair(4000L, 5000L)
+                currentScore >= 1000 -> Pair(3000L, 3500L)
+                currentScore >= 500  -> Pair(4000L, 4500L)
+                else                -> Pair(5000L, 5500L)
             }
 
             // Define a threshold (in pixels) to ensure a minimum horizontal separation.
@@ -122,7 +125,7 @@ fun GameCanvas(navController: NavHostController) {
             }
 
             // Calculate the bad object's falling speed.
-            val baseBadVelocity = Random.nextFloat() * 1f + 2f
+            val baseBadVelocity = Random.nextFloat() * 1f + 1f
             val badVelocity = baseBadVelocity * multiplier
 
             asteroidImage?.let {
@@ -139,7 +142,7 @@ fun GameCanvas(navController: NavHostController) {
             }
 
             // Calculate the good object's falling speed.
-            val baseGoodVelocity = Random.nextFloat() * 1f + 1f
+            val baseGoodVelocity = Random.nextFloat() * 1f + 0.5f
             val goodVelocity = baseGoodVelocity * multiplier
 
             starImage?.let {
