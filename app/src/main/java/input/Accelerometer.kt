@@ -41,6 +41,5 @@ fun accelerometerSensor(): Triple<Float, Float, Float> {
             sensorManager?.unregisterListener(listener)
         }
     }
-
     return accelValues
 }

@@ -319,6 +319,7 @@ fun GameCanvas(navController: NavHostController) {
                     }
 
                     // Draw the updated bounding box
+                    /*
                     drawRect(
                         color = Color.Green,
                         topLeft = Offset(sprite.boundingBox.left, sprite.boundingBox.top),
@@ -328,6 +329,7 @@ fun GameCanvas(navController: NavHostController) {
                         ),
                         style = androidx.compose.ui.graphics.drawscope.Stroke(width = 3f)
                     )
+                    */
                 }
             }
 
