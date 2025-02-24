@@ -19,6 +19,8 @@ import androidx.navigation.NavHostController
 import astrojump.util.loadImageFromAssets
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import astrojump.ui.theme.rememberCustomFont
+import android.view.SoundEffectConstants
+import androidx.compose.ui.platform.LocalView
 
 @Composable
 fun MainMenuScreen(navController: NavHostController) {
@@ -100,10 +102,15 @@ fun MainMenuScreen(navController: NavHostController) {
 @Composable
 fun ButtonWithImage(buttonImage: BitmapPainter, text: String, onClick: () -> Unit) {
     val customFont = rememberCustomFont()
+    val view = LocalView.current
+
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick)
+            .clickable {
+                view.playSoundEffect(SoundEffectConstants.CLICK) // Play default Android click sound
+                onClick()
+            }
     ) {
         Image(
             painter = buttonImage,
@@ -122,4 +129,3 @@ fun ButtonWithImage(buttonImage: BitmapPainter, text: String, onClick: () -> Uni
         )
     }
 }
-

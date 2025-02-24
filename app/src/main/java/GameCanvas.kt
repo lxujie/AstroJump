@@ -33,6 +33,7 @@ import astrojump.data.HighScore
 import astrojump.model.ObjectType
 import astrojump.model.Player
 import astrojump.model.SkyItems
+import astrojump.util.SFXManager
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -68,6 +69,9 @@ fun GameCanvas() {
 
     val context = LocalContext.current
     val db = GameDatabase.getDatabase(context)
+    LaunchedEffect(Unit) {
+        SFXManager.init(context)
+    }
 
     // Create Player Sprite when asset is loaded
     LaunchedEffect(astroBoyImage) {
@@ -185,14 +189,17 @@ fun GameCanvas() {
                     }
                     outOfBoundsObjects.add(sprite)
                 }
-
                 if (player != null && sprite is SkyItems && player.checkCollision(sprite)) {
+                    SFXManager.playCollide()
+
                     when (sprite.type) {
                         ObjectType.BAD -> {
                             playerHealth = (playerHealth - 1).coerceAtLeast(0)
                             if (playerHealth == 0 && !gameOver) {
                                 gameOver = true
-                                // Update the database
+                                // Play the death sound effect when health reaches zero.
+                                SFXManager.playDeath()
+                                // Update the database and perform other game over tasks...
                                 kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
                                     val highScoreDao = db.highScoreDao()
                                     val gameSessionDao = db.gameSessionDao()
@@ -200,7 +207,6 @@ fun GameCanvas() {
                                     if (playerScore > savedHighScore) {
                                         highScoreDao.insertHighScore(HighScore(id = 0, score = playerScore))
                                     }
-                                    // Log this game session
                                     gameSessionDao.insertGameSession(
                                         GameSession(score = playerScore, date = System.currentTimeMillis())
                                     )
@@ -208,7 +214,6 @@ fun GameCanvas() {
                             }
                         }
                         ObjectType.GOOD -> {
-                            // Only increment score if the game is active.
                             if (!gameOver) {
                                 playerScore += 100
                             }
@@ -225,7 +230,6 @@ fun GameCanvas() {
         }
     }
 
-    // Inside your GameCanvas composable, before the Box() where you render your UI:
     var highScore by remember { mutableIntStateOf(0) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -296,3 +300,4 @@ fun GameCanvas() {
         }
     }
 }
+
