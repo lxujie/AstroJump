@@ -51,17 +51,14 @@ fun GameCanvas() {
     val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() } // Convert to pixels
     val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() } // Get screen width
 
-    // Load Background Image
+    // Load assets
     val backgroundImage = loadImageFromAssets("Space.png")
-    // Load the AstroBoy image once from assets.
     val astroBoyImage = loadImageFromAssets("AstroBoy1.png")
-    // Bad Object
     val asteroidImage = loadImageFromAssets("Asteroid.png")
-    // Good Object
     val starImage = loadImageFromAssets("ShootingStar.png")
-    // Maintain a list of sprites. This state will hold your game objects.
+
+    // Game sprites and sky item lists
     val sprites = remember { mutableStateListOf<Sprite>() }
-    // Maintain a list of sky items. This state will hold your game objects.
     val skyItems = remember { mutableStateListOf<SkyItems>() }
 
     // Game State Variables
@@ -72,8 +69,7 @@ fun GameCanvas() {
     val context = LocalContext.current
     val db = GameDatabase.getDatabase(context)
 
-
-    // Create Player Sprite
+    // Create Player Sprite when asset is loaded
     LaunchedEffect(astroBoyImage) {
         if (astroBoyImage != null) {
             val player = Player(
@@ -85,6 +81,7 @@ fun GameCanvas() {
         }
     }
 
+    // spawn sky items periodically (both good and bad objects)
     LaunchedEffect(asteroidImage, starImage) {
         while (true) {
             val randomX = Random.nextFloat() * screenWidthPx
@@ -125,7 +122,6 @@ fun GameCanvas() {
 
     // Read accelerometer sensor values
     val (axRaw, ayRaw, azRaw) = accelerometerSensor()
-    //filter the raw sensor values
     val (axFiltered, _, _) = rememberFilteredAcceleration(
         rawX = axRaw,
         rawY = ayRaw,
@@ -149,10 +145,14 @@ fun GameCanvas() {
             val player = sprites.firstOrNull { it is Player } as? Player
 
             player?.let {
-                if (abs(latestAxRaw) < 0.01f) {
+                // calculate tilt magnitude and use it to dynamically adjust sensitivity
+                val tiltMagnitude = abs(latestAxRaw)
+                if (tiltMagnitude < 0.01f) {
                     it.velocity.value = Offset.Zero
                 } else {
-                    val accelerationX = -latestAx * sensitivity
+                    val tiltMultiplier = 1 + tiltMagnitude // increase multiplier based on tilt
+                    val dynamicSensitivity = sensitivity * tiltMultiplier
+                    val accelerationX = -latestAx * dynamicSensitivity
                     val newVelX = it.velocity.value.x + accelerationX * dt
                     it.velocity.value = Offset(newVelX * friction, it.velocity.value.y)
                 }
@@ -161,9 +161,9 @@ fun GameCanvas() {
             val collidedObjects = mutableListOf<Sprite>()
             val outOfBoundsObjects = mutableListOf<Sprite>()
 
+            // update all sprites, handle collisions and remove out-of bound objects
             sprites.forEach { sprite ->
                 sprite.update(dt, screenWidthPx, screenHeightPx)
-
                 if (sprite.position.value.y >= screenHeightPx) {
                     outOfBoundsObjects.add(sprite)
                 }
