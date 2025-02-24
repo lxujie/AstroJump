@@ -221,6 +221,7 @@ fun GameCanvas(navController: NavHostController) {
                         ObjectType.BAD -> {
                             playerHealth = (playerHealth - 1).coerceAtLeast(0)
                             if (playerHealth == 0 && !gameOver) {
+                                SFXManager.playDeath()
                                 gameOver = true // Set immediately so UI updates, but delay navigation
 
                                 // Update the database
@@ -237,7 +238,7 @@ fun GameCanvas(navController: NavHostController) {
                                     )
 
                                     withContext(Dispatchers.Main) {
-                                        delay(300) // Delay to prevent recomposition issues
+                                        delay(1000) // Delay to prevent recomposition issues
                                         if (!hasNavigated) {
                                             hasNavigated = true
                                             navController.navigate("gameOver")

@@ -1,10 +1,11 @@
-// File: AstroJumpApp.kt
 package astrojump
 
 import android.app.Activity
 import android.app.Application
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import edu.singaporetech.astrojump.R
 
@@ -18,10 +19,14 @@ class AstroJumpApp : Application() {
         super.onCreate()
 
         try {
-            mediaPlayer = MediaPlayer.create(this, R.raw.bgm)
-            mediaPlayer.setVolume(0.3f, 0.3f) // Set volume to 30%
+            // Create the MediaPlayer without starting playback immediately.
+            mediaPlayer = MediaPlayer.create(this, R.raw.bgm_compressed)
+            mediaPlayer.setVolume(0.3f, 0.3f)
             mediaPlayer.isLooping = true
+
+            // Warm up the audio hardware: start then immediately pause.
             mediaPlayer.start()
+            mediaPlayer.pause()
         } catch (e: Exception) {
             Log.e("AstroJumpApp", "Error initializing MediaPlayer", e)
         }
@@ -66,8 +71,10 @@ class AstroJumpApp : Application() {
 
     fun resumeBGM() {
         if (!mediaPlayer.isPlaying) {
-            mediaPlayer.start()
-            Log.d("AstroJumpApp", "BGM resumed")
+            Handler(Looper.getMainLooper()).postDelayed({
+                mediaPlayer.start()
+                Log.d("AstroJumpApp", "BGM resumed")
+            }, 100L)
         }
     }
 

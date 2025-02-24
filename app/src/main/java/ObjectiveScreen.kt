@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -31,11 +32,17 @@ fun ObjectiveScreen(navController: NavHostController) {
     val starImage = loadImageFromAssets("Star.png")?.let { BitmapPainter(it) }
     val asteroidImage = loadImageFromAssets("Asteroid.png")?.let { BitmapPainter(it) }
 
+    var hasNavigated by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .clickable { navController.navigate("game") }
+            .clickable {
+                if (!hasNavigated) {
+                    hasNavigated = true
+                    navController.navigate("game")
+                }
+            }
     ) {
         // Background Image
         backgroundImage?.let {
