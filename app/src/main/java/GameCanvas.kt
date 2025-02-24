@@ -163,7 +163,7 @@ fun GameCanvas(navController: NavHostController) {
 
             if ((Random.nextInt(0,5)) < rng ) {
                 // Calculate the bad object's falling speed.
-                val baseBadVelocity = Random.nextFloat() * 1f + 1f
+                val baseBadVelocity = Random.nextFloat() * 1f + 1.2f
                 val badVelocity = baseBadVelocity * multiplier
 
                 asteroidImage?.let {
@@ -181,7 +181,7 @@ fun GameCanvas(navController: NavHostController) {
                 }
             }
             // Calculate the good object's falling speed.
-            val baseGoodVelocity = Random.nextFloat() * 1f + 0.5f
+            val baseGoodVelocity = Random.nextFloat() * 1f + 0.8f
             val goodVelocity = baseGoodVelocity * multiplier
 
             starImage?.let {
