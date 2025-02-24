@@ -81,11 +81,21 @@ fun GameCanvas() {
         }
     }
 
-    // spawn sky items periodically (both good and bad objects)
+    // Spawn sky items periodically (both good and bad objects)
     LaunchedEffect(asteroidImage, starImage) {
         while (true) {
+            // Determine the speed multiplier based on the player's score.
+            // Adjust thresholds and multipliers as needed.
+            val multiplier = when {
+                playerScore >= 1000 -> 1.2f
+                playerScore >= 500  -> 1.1f
+                else                -> 1f
+            }
+
+            // Calculate the bad object's falling speed.
             val randomX = Random.nextFloat() * screenWidthPx
-            val badVelocity = Random.nextFloat() * 3f + 3f
+            val baseBadVelocity = Random.nextFloat() * 3f + 3f
+            val badVelocity = baseBadVelocity * multiplier
 
             asteroidImage?.let {
                 val badObject = SkyItems(
@@ -100,8 +110,10 @@ fun GameCanvas() {
                 skyItems.add(badObject)
             }
 
+            // Calculate the good object's falling speed.
             val randomX2 = Random.nextFloat() * screenWidthPx
-            val goodVelocity = Random.nextFloat() * 2f + 1f
+            val baseGoodVelocity = Random.nextFloat() * 2f + 1f
+            val goodVelocity = baseGoodVelocity * multiplier
 
             starImage?.let {
                 val goodObject = SkyItems(
@@ -130,7 +142,7 @@ fun GameCanvas() {
         threshold = 0f //no dead zone for debugging
     )
 
-    //always get the latest axFiltered and axRaw value
+    // Always get the latest axFiltered and axRaw value
     val latestAx by rememberUpdatedState(newValue =  axFiltered)
     val latestAxRaw by rememberUpdatedState(newValue = axRaw)
 
@@ -145,7 +157,7 @@ fun GameCanvas() {
             val player = sprites.firstOrNull { it is Player } as? Player
 
             player?.let {
-                // calculate tilt magnitude and use it to dynamically adjust sensitivity
+                // Calculate tilt magnitude and use it to dynamically adjust sensitivity
                 val tiltMagnitude = abs(latestAxRaw)
                 if (tiltMagnitude < 0.01f) {
                     it.velocity.value = Offset.Zero
@@ -161,7 +173,7 @@ fun GameCanvas() {
             val collidedObjects = mutableListOf<Sprite>()
             val outOfBoundsObjects = mutableListOf<Sprite>()
 
-            // update all sprites, handle collisions and remove out-of bound objects
+            // Update all sprites, handle collisions and remove out-of bound objects
             sprites.forEach { sprite ->
                 sprite.update(dt, screenWidthPx, screenHeightPx)
                 if (sprite.position.value.y >= screenHeightPx) {
