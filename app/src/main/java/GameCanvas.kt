@@ -34,18 +34,20 @@ import astrojump.model.ObjectType
 import astrojump.model.Player
 import astrojump.model.SkyItems
 import astrojump.util.SFXManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 var count = 0
 
 @Composable
 fun GameScreen(navController: NavHostController) {
-    GameCanvas()
+    GameCanvas(navController = NavHostController(LocalContext.current))
 }
 
 @Composable
-fun GameCanvas() {
+fun GameCanvas(navController: NavHostController) {
 
     val density = LocalDensity.current
     val configuration = LocalConfiguration.current
@@ -72,6 +74,7 @@ fun GameCanvas() {
     LaunchedEffect(Unit) {
         SFXManager.init(context)
     }
+    var hasNavigated by remember { mutableStateOf(false) }
 
     // Create Player Sprite when asset is loaded
     LaunchedEffect(astroBoyImage) {
@@ -87,7 +90,7 @@ fun GameCanvas() {
     }
 
     // Spawn sky items periodically (both good and bad objects)
-    LaunchedEffect(asteroidImage, starImage) {
+    LaunchedEffect(asteroidImage, starImage, playerScore) {
         while (true) {
             // Determine the speed multiplier based on the player's score.
             // Adjust thresholds and multipliers as needed.
@@ -97,9 +100,29 @@ fun GameCanvas() {
                 else                -> 1f
             }
 
-            // Calculate the bad object's falling speed.
+            // Determine delay range based on player's score.
+            val (minDelay, maxDelay) = when {
+                playerScore >= 1000 -> Pair(2000L, 2500L)
+                playerScore >= 500  -> Pair(3000L, 3500L)
+                else                -> Pair(4000L, 5000L)
+            }
+
+            // Define a threshold (in pixels) to ensure a minimum horizontal separation.
+            val separationThreshold = 50f // Adjust as needed based on object sizes
+
+            // Generate random positions for the objects.
             val randomX = Random.nextFloat() * screenWidthPx
-            val baseBadVelocity = Random.nextFloat() * 3f + 3f
+            var randomX2 = Random.nextFloat() * screenWidthPx
+
+            // If both images are available, ensure they are not too close.
+            if (asteroidImage != null && starImage != null) {
+                while (abs(randomX - randomX2) < separationThreshold) {
+                    randomX2 = Random.nextFloat() * screenWidthPx
+                }
+            }
+
+            // Calculate the bad object's falling speed.
+            val baseBadVelocity = Random.nextFloat() * 1f + 2f
             val badVelocity = baseBadVelocity * multiplier
 
             asteroidImage?.let {
@@ -116,8 +139,7 @@ fun GameCanvas() {
             }
 
             // Calculate the good object's falling speed.
-            val randomX2 = Random.nextFloat() * screenWidthPx
-            val baseGoodVelocity = Random.nextFloat() * 2f + 1f
+            val baseGoodVelocity = Random.nextFloat() * 1f + 1f
             val goodVelocity = baseGoodVelocity * multiplier
 
             starImage?.let {
@@ -134,7 +156,7 @@ fun GameCanvas() {
                 skyItems.add(goodObject)
             }
 
-            delay(Random.nextLong(1500L, 2500L))
+            delay(Random.nextLong(minDelay, maxDelay))
         }
     }
 
@@ -196,20 +218,28 @@ fun GameCanvas() {
                         ObjectType.BAD -> {
                             playerHealth = (playerHealth - 1).coerceAtLeast(0)
                             if (playerHealth == 0 && !gameOver) {
-                                gameOver = true
-                                // Play the death sound effect when health reaches zero.
-                                SFXManager.playDeath()
-                                // Update the database and perform other game over tasks...
+                                gameOver = true // Set immediately so UI updates, but delay navigation
+
+                                // Update the database
                                 kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
                                     val highScoreDao = db.highScoreDao()
                                     val gameSessionDao = db.gameSessionDao()
                                     val savedHighScore = highScoreDao.getHighScore()?.score ?: 0
+
                                     if (playerScore > savedHighScore) {
                                         highScoreDao.insertHighScore(HighScore(id = 0, score = playerScore))
                                     }
                                     gameSessionDao.insertGameSession(
                                         GameSession(score = playerScore, date = System.currentTimeMillis())
                                     )
+
+                                    withContext(Dispatchers.Main) {
+                                        delay(300) // Delay to prevent recomposition issues
+                                        if (!hasNavigated) {
+                                            hasNavigated = true
+                                            navController.navigate("gameOver")
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -232,6 +262,7 @@ fun GameCanvas() {
 
     var highScore by remember { mutableIntStateOf(0) }
     val coroutineScope = rememberCoroutineScope()
+
 
     // Update high score when the game is over (or when the composable first loads)
     LaunchedEffect(gameOver) {
