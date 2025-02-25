@@ -149,7 +149,7 @@ fun GameCanvas(navController: NavHostController) {
             // If both images are available, ensure they are not too close.
             if (asteroidImage != null && starImage != null) {
                 while (abs(randomX - randomX2) < separationThreshold) {
-                    randomX2 = Random.nextFloat() * screenWidthPx
+                    randomX2 = Random.nextFloat() * (screenWidthPx - 150f)
                 }
             }
 
