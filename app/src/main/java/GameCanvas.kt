@@ -421,7 +421,7 @@ fun GameCanvas(navController: NavHostController) {
             // Pause button in top-right corner with custom implementation
             Box(modifier = Modifier
                 .align(Alignment.TopEnd)
-                //.padding(top = 20.dp, end = 20.dp)
+                .padding(top = 20.dp, end = 20.dp)
             ) {
                 Box(
                     modifier = Modifier
