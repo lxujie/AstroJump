@@ -75,6 +75,15 @@ fun HowToPlayScreen(navController: NavHostController) {
                 color = Color.White
             )
         }
+        Text(
+            text = "Tap anywhere to skip",
+            fontFamily = rememberCustomFont(), // Use your custom font here
+            fontSize = 16.sp, // Large title font size
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 20.dp),
+
+            )
     }
 
     // Timer for 5 seconds
