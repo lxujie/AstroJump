@@ -24,6 +24,7 @@ import kotlinx.coroutines.delay
 import androidx.compose.animation.core.tween
 //import androidx.compose.foundation.Image
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.IntOffset
 import astrojump.util.ButtonWithImage
 
 @Composable
@@ -122,7 +123,7 @@ fun GameOverScreen(navController: NavHostController, score: Int) {
                     .size(150.dp)
                     .graphicsLayer(rotationZ = 180f) // Rotate 180 degrees
                     .align(Alignment.BottomEnd) // Position at the bottom right corner
-                    .offset(y = offsetY.dp) // Apply animated downward offset
+                    .offset { IntOffset(0, offsetY.toInt()) } // Apply animated downward offset
                     .padding(16.dp) // Add some padding from the corner
             )
         }
