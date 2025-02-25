@@ -4,16 +4,16 @@ package astrojump.ui
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+//import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+//import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalView
+//import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,8 +22,9 @@ import astrojump.util.loadImageFromAssets
 import astrojump.ui.theme.rememberCustomFont
 import kotlinx.coroutines.delay
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
+//import androidx.compose.foundation.Image
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.IntOffset
 import astrojump.util.ButtonWithImage
 
 @Composable
@@ -122,7 +123,7 @@ fun GameOverScreen(navController: NavHostController, score: Int) {
                     .size(150.dp)
                     .graphicsLayer(rotationZ = 180f) // Rotate 180 degrees
                     .align(Alignment.BottomEnd) // Position at the bottom right corner
-                    .offset(y = offsetY.dp) // Apply animated downward offset
+                    .offset { IntOffset(0, offsetY.toInt()) } // Apply animated downward offset
                     .padding(16.dp) // Add some padding from the corner
             )
         }
