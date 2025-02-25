@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.geometry.Rect
+//import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 
 enum class ObjectType {
@@ -30,7 +30,7 @@ class SkyItems(
     override fun update(dt: Float, screenWidth: Float, screenHeight: Float) {
         val gravity = 9.8f * 10 // Adjust gravity strength for the game
 
-        var newX = position.value.x + velocity.value.x * dt
+        val newX = position.value.x + velocity.value.x * dt
         val newY = position.value.y + velocity.value.y + gravity * dt
 
         position.value = Offset(newX, newY)

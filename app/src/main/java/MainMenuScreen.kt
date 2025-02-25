@@ -15,7 +15,6 @@ import astrojump.util.loadImageFromAssets
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import astrojump.ui.theme.rememberCustomFont
 import android.view.SoundEffectConstants
-import androidx.compose.ui.platform.LocalView
 import astrojump.util.ButtonWithImage
 
 @Composable

@@ -12,15 +12,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.Row
+//import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+//import androidx.compose.material.icons.Icons
+//import androidx.compose.material3.Button
+//import androidx.compose.material3.ButtonDefaults
+//import androidx.compose.material3.Icon
+//import androidx.compose.material3.IconButton
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -294,7 +294,7 @@ fun GameCanvas(navController: NavHostController) {
                                 gameOver = true // Set immediately so UI updates, but delay navigation
 
                                 // Update the database
-                                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                                kotlinx.coroutines.CoroutineScope(Dispatchers.IO).launch {
                                     val highScoreDao = db.highScoreDao()
                                     val gameSessionDao = db.gameSessionDao()
                                     val savedHighScore = highScoreDao.getHighScore()?.score ?: 0
@@ -340,7 +340,7 @@ fun GameCanvas(navController: NavHostController) {
     LaunchedEffect(gameOver) {
         // When the game is over, or initially, read the high score from the DB
         coroutineScope.launch {
-            highScore = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+            highScore = withContext(Dispatchers.IO) {
                 db.highScoreDao().getHighScore()?.score ?: 0
             }
         }
