@@ -388,7 +388,10 @@ fun GameCanvas(navController: NavHostController) {
             }
 
             // Display Health & Score
-            Column(modifier = Modifier.align(Alignment.TopStart)) {
+            Column(
+                modifier = Modifier.align(Alignment.TopStart)
+                    .padding(20.dp)
+            ) {
                 Text(
                     text = "Health: $playerHealth",
                     fontFamily = rememberCustomFont(),
@@ -418,7 +421,7 @@ fun GameCanvas(navController: NavHostController) {
             // Pause button in top-right corner with custom implementation
             Box(modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(16.dp)
+                .padding(top = 20.dp, end = 20.dp)
             ) {
                 Box(
                     modifier = Modifier
